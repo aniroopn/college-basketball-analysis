@@ -1,7 +1,7 @@
 ---
 title: "final_project_analysis"
 authors: "Wyatt Sinclair, Aniroop Naladala, Abhinav Pillai, Alyvia Fager"
-output: html_document
+output: github_document
 date: "2026-04-26"
 ---
 
