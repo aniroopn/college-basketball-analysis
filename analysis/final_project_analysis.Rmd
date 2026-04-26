@@ -8,8 +8,6 @@ date: "2026-04-26"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,  warning = FALSE)
 
-install.packages("corrplot")
-
 library(tidyverse)
 library(janitor)
 library(scales)
@@ -44,6 +42,10 @@ cor_matrix <- cor(numeric_vars)
 
 cor_matrix
 ```
+
+The correlation table provides numerical evidence of the relationships between team statistics and win percentage. Consistent with the heatmap, efficiency margin shows the strongest positive relationship with winning (0.76), indicating that teams that outscore their opponents by larger margins tend to be more successful. Offensive efficiency (0.68) also has a strong positive association with win percentage, while defensive efficiency (−0.62) has a strong negative relationship, meaning that teams that allow fewer points perform better.
+
+Additionally, BARTHAG has a high correlation with both win percentage (0.75) and efficiency margin (0.99), reinforcing its role as a comprehensive measure of team strength. Shooting efficiency metrics, such as effective field goal percentage on offense (0.61) and defense (−0.58), also show meaningful relationships with winning. In contrast, adjusted tempo has almost no correlation with win percentage (−0.01), suggesting that the pace of play does not significantly influence team success.
 
 ```{r}
 # correlation plot
