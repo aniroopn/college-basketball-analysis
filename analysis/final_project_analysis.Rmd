@@ -8,10 +8,13 @@ date: "2026-04-26"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,  warning = FALSE)
 
+install.packages("corrplot")
+
 library(tidyverse)
 library(janitor)
 library(scales)
 library(knitr)
+library(corrplot)
 ```
 
 ```{r Data Loading}
@@ -20,9 +23,44 @@ cbb_raw <- read_csv("../data/cbb.csv")
 glimpse(cbb_raw)
 ```
 
-```{r}
+**Question 1:** Which team statistics are mostly strongly associated with wins?
 
+```{r}
+# Clean the data and create variables
+cbb_clean <- cbb_raw %>%
+  clean_names() %>%
+  mutate(
+    win_pct = w / g,
+    efficiency_margin = adjoe - adjde
+  ) %>%
+  select(win_pct, adjoe, adjde, adj_t, barthag, efg_o, efg_d, efficiency_margin) %>%
+  drop_na()
+
+# Correlation matrix
+numeric_vars <- cbb_clean %>%
+  select(win_pct, adjoe, adjde, adj_t, barthag, efg_o, efg_d, efficiency_margin)
+
+cor_matrix <- cor(numeric_vars)
+
+cor_matrix
 ```
+
+```{r}
+# correlation plot
+corrplot(
+  cor_matrix,
+  method = "color",
+  type = "upper",
+  col = colorRampPalette(c("red", "white", "blue"))(200),
+  addCoef.col = "black",   # shows correlation numbers
+  tl.col = "black",        # axis label color
+  tl.srt = 45              # rotate labels
+)
+```
+
+**Figure 1:** Correlation between team statistics and win percentage
+
+The heatmap shows that efficiency margin has the strongest relationship with win percentage (0.76), indicating that teams that outscore opponents by larger margins win more games. Offensive efficiency (0.68) and defensive efficiency (−0.62) are both strongly related to winning, with offense showing a slightly stronger association. BARTHAG is also highly correlated with both efficiency margin and win percentage, reinforcing its role as a composite performance metric. In contrast, tempo exhibits near-zero correlation, suggesting that pace of play does not significantly influence team success. Overall these results suggest that team success is driven more by efficiency based performance than by style of play.
 
 ```{r}
 
