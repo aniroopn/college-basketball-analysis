@@ -1,0 +1,100 @@
+---
+title: "Project Proposal Outline: College Basketball Analysis"
+author: "Migos"
+date: "4/12/2026"
+output:
+  html_document:
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# College Basketball dataset
+
+
+# Team Members
+
+- Wyatt Sinclair 
+- Aniroop Naladala
+- Abhi Pillai
+
+# Data Description
+
+## Dataset
+
+We are using the **College Basketball Dataset** by Andrew Sundberg on Kaggle:
+
+<https://www.kaggle.com/datasets/andrewsundberg/college-basketball-dataset>
+
+This dataset contains Division I men's college basketball team statistics across multiple seasons. It includes team level variables such as conference, wins, postseason results, offensive efficiency, defensive efficiency, shooting percentages, tempo, strength of schedule, and seed information.
+
+## Why this dataset is useful
+
+This dataset is a good fit for our project because:
+
+- We are college basketball fans,
+- It includes many teams, seasons, and many different statistical variables,
+- It has enough variables for multiple group members to explore different questions,
+
+
+## Initial data cleaning steps
+
+The initial cleaning steps we expect to complete are:
+
+1. Import the data into R.
+2. Check variable names and data types.
+3. Handle missing values, especially in postseason and seed variables.
+4. Filter to the seasons we want to analyze.
+5. Create useful derived variables such as: win percentage, tournament participation, efficiency margin, defensive efficience, offensive, efficience 
+
+## Basic / marginal summaries we plan to explore
+
+We plan to begin with:
+
+- number of teams by season,
+- number of teams by conference,
+- summary statistics for wins,
+- summary statistics for offensive and defensive efficiency,
+- distributions of shooting percentages,
+- average values of major performance metrics by postseason outcome.
+
+# Project Idea / Research Questions
+
+Our overall goal is to investigate which team characteristics are most associated with success in college basketball.
+We want to compare offensive, defensive, and tempo-related statistics to see how they relate to wins and postseason performance.
+
+## Possible group research questions
+
+
+1. Which team statistics are most strongly associated with total wins?
+2. Is offensive efficiency or defensive efficiency more strongly related to win percentage?
+3. What statistics best distinguish teams that make the NCAA tournament from teams that do not?
+4. Which variables are most associated with deeper postseason runs?
+5. Does tempo relate to offensive success, defensive success, or overall wins?
+6. Do some conferences show consistently different statistical profiles than others?
+
+# Planned Analyses and Visualizations
+
+We expect to use the following:
+
+## Summaries
+
+- tables of averages and medians,
+- grouped summaries by conference, season, and postseason status.
+
+## Visualizations
+
+- histograms 
+- boxplots 
+- scatterplots 
+- bar charts 
+- correlation heatmaps
+
+## Possible statistical methods
+
+- correlation analysis,
+- linear regression,
+- logistic regression for tournament participation,
+- group comparisons using summary statistics and visual evidence.
