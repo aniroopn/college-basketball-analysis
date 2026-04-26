@@ -1,6 +1,6 @@
 ---
 title: "final_project_analysis"
-authors: "Wyatt Sinclair, aniroop naladala, abhinav pillai. alyvia fager"
+authors: "Wyatt Sinclair, Aniroop Naladala, Abhinav Pillai. Alyvia Fager"
 output: html_document
 date: "2026-04-26"
 ---
@@ -14,45 +14,35 @@ library(scales)
 library(knitr)
 ```
 
-
 ```{r Data Loading}
 cbb_raw <- read_csv("../data/cbb.csv")
 
 glimpse(cbb_raw)
 ```
 
+```{r}
 
+```
 
 ```{r}
 
 ```
 
+```{r}
 
+```
 
 ```{r}
 
 ```
 
-
 ```{r}
 
 ```
 
-
 ```{r}
 
 ```
-
-
-```{r}
-
-```
-
-
-```{r}
-
-```
-
 
 ```{r}
 
