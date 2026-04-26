@@ -1,6 +1,6 @@
 ---
 title: "final_project_analysis"
-authors: "Wyatt Sinclair"
+authors: "Wyatt Sinclair, aniroop naladala, abhinav pillai. alyvia fager"
 output: html_document
 date: "2026-04-26"
 ---
