@@ -1,5 +1,5 @@
 ---
-title: "final_project_analysis"
+title: "College Basketball Analysis"
 authors: "Wyatt Sinclair, Aniroop Naladala, Abhinav Pillai, Alyvia Fager"
 output: github_document
 date: "2026-04-26"
