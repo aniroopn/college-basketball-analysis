@@ -4,6 +4,76 @@ College Basketball Analysis
 
 #### Aniroop Naladala, Wyatt Sinclair, Abhinav Pillai, Alyvia Fager
 
+## Introduction
+
+The goal of this project is to explore team-level data to better
+understand what drives success in college basketball. With the
+increasing use of advanced analytics in sports, it is important to move
+beyond basic statistics and examine how different performance metrics
+contribute to winning. Analyzing these factors can provide insight into
+team strengths, improve strategic decision-making, and highlight key
+trends in the game.
+
+In pursuit of this goal, we will explore the following questions:
+
+1.  Which team statistics are most strongly associated with total wins?
+
+2.  Is offensive efficiency or defensive efficiency more strongly
+    related to win percentage?
+
+3.  What statistics best distinguish teams that make the NCAA tournament
+    from teams that do not?
+
+4.  Which variables are most associated with deeper postseason runs?
+
+5.  Does tempo relate to offensive success, defensive success, or
+    overall wins?
+
+6.  Do some conferences show consistently different statistical profiles
+    than others?
+
+These are the main questions we aim to answer through the completion of
+this project. With our findings, we hope to better understand the key
+characteristics that contribute to success in college basketball and
+highlight the importance of efficiency-based metrics in evaluating team
+performance.
+
+## Data
+
+### Structure
+
+The dataset used in this project is the *College Basketball Dataset* by
+Andrew Sundberg, available on Kaggle:
+<https://www.kaggle.com/datasets/andrewsundberg/college-basketball-dataset>
+
+This dataset contains statistics for Division I men’s college basketball
+teams across multiple seasons. Each row represents a team in a given
+season, and includes a wide range of variables related to team
+performance. These variables include basic information such as team
+name, conference, number of games played, and wins, as well as advanced
+metrics such as offensive efficiency, defensive efficiency, tempo,
+effective field goal percentage, strength of schedule, and postseason
+results.
+
+The number of variables in the dataset is large and covers multiple
+aspects of team performance, making it well-suited for analyzing
+different factors that contribute to success in college basketball.
+Because the dataset spans multiple seasons and includes many teams, it
+provides a comprehensive view of performance across the league.
+
+In order to create a manageable and focused dataset for analysis, we
+worked with a subset of the available variables. Rather than using every
+column, we selected only those that were most relevant to our research
+questions, such as efficiency metrics, shooting percentages, and
+win-related statistics. This allowed us to reduce complexity while still
+maintaining meaningful insights.
+
+Each row in the dataset corresponds to a single team in a specific
+season, meaning that the data is already structured at the team level.
+This makes it easier to compare performance across teams and seasons
+without needing to merge multiple files, unlike more complex datasets
+that contain separate tables for different entities.
+
 ``` r
 cbb_raw <- read_csv("../data/cbb.csv")
 
@@ -39,6 +109,8 @@ glimpse(cbb_raw)
 
 ## Question 1: Which team statistics are most strongly associated with wins?
 
+#### Cleaning for Question 1:
+
 ``` r
 # Clean the data and create variables
 cbb_clean <- cbb_raw %>%
@@ -66,6 +138,12 @@ was based on complete and consistent data.
 
 Overall, these steps helped create a clean and focused dataset, making
 the results more reliable and easier to interpret.
+
+To answer this research question, I used correlation analysis to examine
+the relationships between win percentage and key team statistics. This
+method allows me to measure the strength and direction of association
+between variables such as offensive efficiency, defensive efficiency,
+and efficiency margin.
 
 ``` r
 # Correlation matrix
@@ -602,6 +680,8 @@ games. In contrast, stylistic factors such as tempo have little to no
 impact on overall success. This suggests that focusing on maximizing
 scoring efficiency and minimizing opponent scoring is far more important
 than the pace at which a team plays.
+
+#### Cleaning for Question 3:
 
 ``` r
 cbb_clean <- cbb_raw %>%
