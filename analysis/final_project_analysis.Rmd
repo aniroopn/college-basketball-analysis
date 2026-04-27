@@ -5,8 +5,9 @@ output: github_document
 date: "2026-04-26"
 ---
 
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,  warning = FALSE)
+knitr::opts_chunk$set(echo = TRUE,  warning = FALSE,  message = FALSE, fig.width = 11, fig.height = 7.5)
 
 library(tidyverse)
 library(janitor)
@@ -64,26 +65,153 @@ corrplot(
 
 The heatmap shows that efficiency margin has the strongest relationship with win percentage (0.76), indicating that teams that outscore opponents by larger margins win more games. Offensive efficiency (0.68) and defensive efficiency (−0.62) are both strongly related to winning, with offense showing a slightly stronger association. BARTHAG is also highly correlated with both efficiency margin and win percentage, reinforcing its role as a composite performance metric. In contrast, tempo exhibits near-zero correlation, suggesting that pace of play does not significantly influence team success. Overall these results suggest that team success is driven more by efficiency based performance than by style of play.
 
-```{r}
+```{r Data Cleaning for Question 3}
+cbb_clean <- cbb_raw %>%
+  clean_names() %>%
+  mutate(
+    # Create win percentage.
+    # This should always be between 0 and 1.
+    win_pct = w / g,
+    
+    # Create a tournament status variable.
+    made_tournament = if_else(is.na(postseason) | postseason == "", "Missed Tournament", "Made Tournament"),
+    
+    # Put the categories in a logical order for graphs.
+    made_tournament = factor(
+      made_tournament,
+      levels = c("Missed Tournament", "Made Tournament")
+    )
+  ) %>%
+  # Remove impossible win percentages.
+  # A team cannot win more games than it played.
+  # I had noticed the my boxplot had teams with over a    
+  # 100% win rate which should not be possible.
+  filter(
+    !is.na(win_pct),
+    win_pct >= 0,
+    win_pct <= 1
+  )
 
+glimpse(cbb_clean)
 ```
 
-```{r}
 
-```
-
-```{r}
-
-```
+# Research Question 3
+What statistics best distinguish teams that make the NCAA tournament from teams that do not?
 
 ```{r}
+# Summarize the average values for tournament and non-tournament teams.
+# This gives us a simple table to compare both groups.
+q3_summary <- cbb_clean %>%
+  group_by(made_tournament) %>%
+  summarise(
+    number_of_teams = n(),
+    average_wins = mean(w, na.rm = TRUE),
+    average_win_pct = mean(win_pct, na.rm = TRUE),
+    average_offense = mean(adjoe, na.rm = TRUE),
+    average_defense = mean(adjde, na.rm = TRUE),
+    average_power_rating = mean(barthag, na.rm = TRUE),
+    average_wab = mean(wab, na.rm = TRUE),
+    .groups = "drop"
+  )
 
+# Print the summary table in a clean format.
+q3_summary %>%
+  kable(
+    digits = 3,
+    caption = "Average statistics for tournament and non-tournament teams"
+  )
 ```
 
-```{r}
+```{r Box_Plots_for_Major_Statistics}
+# Put the main statistics into a longer format.
+# This makes it easier to create one faceted plot with several statistics.
+q3_long <- cbb_clean %>%
+  select(
+    made_tournament,
+    win_pct,
+    adjoe,
+    adjde,
+    barthag,
+    wab
+  ) %>%
+  pivot_longer(
+    cols = c(win_pct, adjoe, adjde, barthag, wab),
+    names_to = "statistic",
+    values_to = "value"
+  ) %>%
+  mutate(
+    # Rename the variables so the plot labels are easier to understand.
+    statistic = recode(
+      statistic,
+      win_pct = "Win Percentage",
+      adjoe = "Adjusted Offensive Efficiency",
+      adjde = "Adjusted Defensive Efficiency",
+      barthag = "Power Rating",
+      wab = "Wins Above Bubble"
+    )
+  )
 
+
+# Make a faceted boxplot to compare several statistics at once.
+# facet_wrap makes a separate small plot for each statistic.
+ggplot(q3_long, aes(x = made_tournament, y = value)) +
+  geom_boxplot(
+    width = 0.55,
+    outlier.alpha = 0.25
+  ) +
+  facet_wrap(~ statistic, scales = "free_y") +
+  labs(
+    title = "Tournament Teams Separate From Non-Tournament Teams in Key Statistics",
+    x = NULL,
+    y = "Statistic Value",
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 11),
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
 ```
 
-```{r}
+```{r Question_3_Win_Percentage_Plot_and_Power Rating}
+# Create a smaller dataset with just the two statistics we want.
+q3_two_stats <- cbb_clean %>%
+  select(made_tournament, win_pct, barthag) %>%
+  pivot_longer(
+    cols = c(win_pct, barthag),
+    names_to = "statistic",
+    values_to = "value"
+  ) %>%
+  mutate(
+    statistic = recode(
+      statistic,
+      win_pct = "Win Percentage",
+      barthag = "Power Rating (BARTHAG)"
+    )
+  )
 
+# Build the graph.
+ggplot(q3_two_stats, aes(x = made_tournament, y = value)) +
+  geom_boxplot(
+    width = 0.55,
+    outlier.alpha = 0.25
+  ) +
+  facet_wrap(~ statistic, scales = "free_y") +
+  labs(
+    title = "Tournament Teams Usually Have Higher Win Percentages and Power Ratings",
+    x = NULL,
+    y = "Value"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 11),
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
 ```
+
+
+Comments: This shows that teams with a higher win percentage are more likely to make the tournament and I believe this is a strongest factor. Teams that made the tournament had a noticeably higher win percentage than teams that did not. This makes sense because you typically need over a .500 win percentage to make the tournament. Teams with a higher BARTHAG value means that there team was stronger overall. These two things winning consistently and being highly rated overall are strong indicators of making the mens NCAA tournament. 
