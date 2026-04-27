@@ -215,3 +215,159 @@ ggplot(q3_two_stats, aes(x = made_tournament, y = value)) +
 
 
 Comments: This shows that teams with a higher win percentage are more likely to make the tournament and I believe this is a strongest factor. Teams that made the tournament had a noticeably higher win percentage than teams that did not. This makes sense because you typically need over a .500 win percentage to make the tournament. Teams with a higher BARTHAG value means that there team was stronger overall. These two things winning consistently and being highly rated overall are strong indicators of making the mens NCAA tournament. 
+
+## Question 5: Does tempo relate to offensive success, defensive success, or overall wins?
+```{r}
+names(cbb_raw)
+
+cbb <- cbb_raw %>%
+  clean_names() %>%
+  drop_na(adj_t, adjoe, adjde, w)
+
+cbb %>%
+  select(adj_t, adjoe, adjde, w) %>%
+  cor()
+```
+
+- Interpretation: The correlation analysis shows that tempo (adj_t) has almost no relationship with total wins (r = -0.026), indicating that playing faster or slower does not significantly impact team success. Tempo also has a very weak positive relationship with offensive efficiency (r = 0.053), suggesting that faster teams are not substantially more effective offensively.
+
+Additionally, tempo has a weak positive relationship with defensive efficiency (r = 0.174). Because higher defensive efficiency values indicate worse defense, this suggests that faster-paced teams may perform slightly worse defensively.
+
+In contrast, offensive and defensive efficiency are strongly associated with wins. Offensive efficiency has a strong positive correlation with wins (r = 0.732), while defensive efficiency has a strong negative correlation with wins (r = -0.639). These results indicate that efficiency metrics are much more important predictors of success than tempo.
+
+```{r}
+#Tempo vs Offensive Efficiency
+ggplot(cbb, aes(x = adj_t, y = adjoe)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Tempo vs Offensive Efficiency",
+    x = "Adjusted Tempo",
+    y = "Adjusted Offensive Efficiency"
+  )
+```
+
+- The scatterplot shows a very slight positive trend between tempo and offensive efficiency, but the relationship is weak and the data points are widely scattered. This suggests that tempo does not strongly influence offensive performance. 
+
+```{r}
+#Tempo vs Defensive Efficiency
+ggplot(cbb, aes(x = adj_t, y = adjde)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Tempo vs Defensive Efficiency",
+    x = "Adjusted Tempo",
+    y = "Adjusted Defensive Efficiency"
+  )
+```
+
+- The plot shows a slight upward trend, indicating that higher tempo is associated with higher defensive efficiency values. Since higher values represent worse defense, this suggests that faster paced teams may allow more efficient scoring by opponents, although the relationship remains weak. 
+
+```{r}
+#Tempo vs Wins
+ggplot(cbb, aes(x = adj_t, y = w)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Tempo vs Wins",
+    x = "Adjusted Tempo",
+    y = "Wins"
+  )
+```
+
+- The scatterplot shows no clear trend between tempo and total wins. The regression line is nearly flat, reinforcing the conclusion that tempo does not meaningfully impact overall team success. 
+
+```{r}
+#Regression Analysis
+model <- lm(w ~ adj_t + adjoe + adjde, data = cbb)
+summary(model)
+```
+
+The regression analysis further reinforces the findings from the correlation and visualization results. Tempo (adj_t) is not a statistically significant predictor of wins (p = 0.256), indicating that pace of play does not meaningfully impact team success when controlling for efficiency metrics.
+
+In contrast, both offensive and defensive efficiency are highly significant predictors of wins. Offensive efficiency (adjoe) has a strong positive effect, with a coefficient of 0.484, suggesting that increases in scoring efficiency are associated with higher win totals. Defensive efficiency (adjde) has a strong negative effect, with a coefficient of -0.375. Because higher defensive efficiency values indicate worse defense, this result shows that better defensive performance is strongly associated with more wins.
+
+The model explains approximately 64.5% of the variation in total wins (R² = 0.645), indicating a strong overall fit. These results confirm that team efficiency, rather than tempo, is the primary driver of success in college basketball.
+
+Conclusion: Overall, the analysis shows that tempo has little to no meaningful relationship with offensive success, defensive success, or total wins in college basketball. While there is a slight tendency for faster teams to have worse defensive efficiency, the relationship is weak and not a major factor in determining outcomes. In contrast, both offensive and defensive efficiency are strongly associated with winning, and regression results confirm that these metrics are the primary drivers of success. This suggests that tempo influences a team’s style of play rather than its effectiveness, as teams can succeed at both fast and slow paces as long as they are efficient offensively and defensively.
+
+
+## Question 6: Do some conferences show consistently different statistical profiles than others?
+To examine whether conferences exhibit different statistical profiles, we compare average tempo, offensive efficiency, defensive efficiency, and wins across conferences using summary statistics and visualizations.
+
+```{r}
+cbb <- cbb_raw %>%
+  clean_names()
+
+#summary table
+conf_summary <- cbb %>%
+  group_by(conf) %>%
+  summarise(
+    avg_tempo = mean(adj_t, na.rm = TRUE),
+    avg_offense = mean(adjoe, na.rm = TRUE),
+    avg_defense = mean(adjde, na.rm = TRUE),
+    avg_wins = mean(w, na.rm = TRUE),
+    teams = n()
+  ) %>%
+  arrange(desc(avg_wins))
+
+kable(conf_summary)
+```
+
+
+- Interpretation: The summary statistics reveal clear differences in statistical profiles across conferences. Power conferences such as the Big 12, Big Ten, SEC, ACC, and Big East consistently demonstrate higher average wins, stronger offensive efficiency, and better defensive performance compared to other conferences. In particular, the Big 12 stands out with the highest average offensive efficiency and win totals, indicating a strong overall competitive profile.
+
+Mid-tier conferences such as the Pac-12, American, and Mountain West show slightly lower offensive efficiency and weaker defensive performance, resulting in fewer average wins. Lower-tier conferences, including the MEAC and SWAC, exhibit substantially lower offensive efficiency and worse defensive metrics, which correspond to significantly lower win totals.
+
+Interestingly, tempo remains relatively consistent across all conferences, with average values clustered closely between 66 and 68 possessions per game. This suggests that differences in team success across conferences are driven primarily by efficiency rather than pace of play.
+
+```{r}
+top_conf <- cbb %>%
+  count(conf, sort = TRUE) %>%
+  slice_head(n = 10) %>%
+  pull(conf)
+
+cbb_top <- cbb %>%
+  filter(conf %in% top_conf)
+
+#Offensive Efficiency 
+ggplot(cbb_top, aes(x = reorder(conf, adjoe, median), y = adjoe)) +
+  geom_boxplot() +
+  coord_flip() +
+  labs(title = "Offensive Efficiency by Conference",
+       x = "Conference",
+       y = "Adj Offensive Efficiency")
+```
+
+- Interpretation: The boxplot shows that power conferences such as the ACC, Big Ten, and SEC have higher median offensive efficiency than other conferences, indicating stronger scoring ability. Lower-tier conferences tend to have lower median values, reflecting weaker offensive performance. While there is some overlap, the overall distribution suggests that teams in stronger conferences consistently perform better offensively.
+
+```{r}
+#Defensive Efficiency
+ggplot(cbb_top, aes(x = reorder(conf, adjde, median), y = adjde)) +
+  geom_boxplot() +
+  coord_flip() +
+  labs(
+    title = "Defensive Efficiency by Conference",
+    x = "Conference",
+    y = "Adj Defensive Efficiency"
+  )
+```
+
+- Interpretation: The boxplot shows that power conferences such as the Big Ten, SEC, and ACC have lower median defensive efficiency values, indicating stronger defensive performance. In contrast, lower-tier conferences such as the Southland and Big Sky have higher values, reflecting weaker defense. Overall, the distribution suggests that stronger conferences consistently perform better defensively.
+
+```{r}
+#Tempo
+ggplot(cbb_top, aes(x = reorder(conf, adj_t, median), y = adj_t)) +
+  geom_boxplot() +
+  coord_flip() +
+  labs(title = "Tempo by Conference",
+       x = "Conference",
+       y = "Adjusted Tempo")
+```
+
+- Interpretation: The boxplot shows that tempo is very similar across all conferences, with median values clustered in a narrow range and comparable variability. Unlike offensive and defensive efficiency, there are no clear differences between conferences, suggesting that tempo does not distinguish stronger and weaker conferences.
+
+Taken together, the visualizations show clear differences in offensive and defensive efficiency across conferences, with power conferences consistently outperforming others. In contrast, tempo remains relatively uniform across all conferences, suggesting that differences in team success are driven by efficiency rather than pace of play.
+
+- Conclusion: Overall, the analysis demonstrates that conferences exhibit consistently different statistical profiles. Power conferences tend to have more efficient offenses, stronger defenses, and higher win totals, while lower-tier conferences show weaker performance across these metrics. Despite these differences, tempo remains largely consistent across conferences, reinforcing the conclusion that pace of play does not significantly distinguish team success. These findings suggest that conference affiliation is strongly associated with team quality and performance characteristics in college basketball.
+
