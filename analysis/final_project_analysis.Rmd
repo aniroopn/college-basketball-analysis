@@ -5,7 +5,6 @@ output: github_document
 date: "2026-04-26"
 ---
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,  warning = FALSE,  message = FALSE, fig.width = 11, fig.height = 7.5)
 
@@ -95,8 +94,8 @@ cbb_clean <- cbb_raw %>%
 glimpse(cbb_clean)
 ```
 
-
 # Research Question 3
+
 What statistics best distinguish teams that make the NCAA tournament from teams that do not?
 
 ```{r}
@@ -213,10 +212,10 @@ ggplot(q3_two_stats, aes(x = made_tournament, y = value)) +
   )
 ```
 
-
-Comments: This shows that teams with a higher win percentage are more likely to make the tournament and I believe this is a strongest factor. Teams that made the tournament had a noticeably higher win percentage than teams that did not. This makes sense because you typically need over a .500 win percentage to make the tournament. Teams with a higher BARTHAG value means that there team was stronger overall. These two things winning consistently and being highly rated overall are strong indicators of making the mens NCAA tournament. 
+Comments: This shows that teams with a higher win percentage are more likely to make the tournament and I believe this is a strongest factor. Teams that made the tournament had a noticeably higher win percentage than teams that did not. This makes sense because you typically need over a .500 win percentage to make the tournament. Teams with a higher BARTHAG value means that there team was stronger overall. These two things winning consistently and being highly rated overall are strong indicators of making the mens NCAA tournament.
 
 ## Question 5: Does tempo relate to offensive success, defensive success, or overall wins?
+
 ```{r}
 names(cbb_raw)
 
@@ -247,7 +246,7 @@ ggplot(cbb, aes(x = adj_t, y = adjoe)) +
   )
 ```
 
-- The scatterplot shows a very slight positive trend between tempo and offensive efficiency, but the relationship is weak and the data points are widely scattered. This suggests that tempo does not strongly influence offensive performance. 
+- The scatterplot shows a very slight positive trend between tempo and offensive efficiency, but the relationship is weak and the data points are widely scattered. This suggests that tempo does not strongly influence offensive performance.
 
 ```{r}
 #Tempo vs Defensive Efficiency
@@ -261,7 +260,7 @@ ggplot(cbb, aes(x = adj_t, y = adjde)) +
   )
 ```
 
-- The plot shows a slight upward trend, indicating that higher tempo is associated with higher defensive efficiency values. Since higher values represent worse defense, this suggests that faster paced teams may allow more efficient scoring by opponents, although the relationship remains weak. 
+- The plot shows a slight upward trend, indicating that higher tempo is associated with higher defensive efficiency values. Since higher values represent worse defense, this suggests that faster paced teams may allow more efficient scoring by opponents, although the relationship remains weak.
 
 ```{r}
 #Tempo vs Wins
@@ -275,7 +274,7 @@ ggplot(cbb, aes(x = adj_t, y = w)) +
   )
 ```
 
-- The scatterplot shows no clear trend between tempo and total wins. The regression line is nearly flat, reinforcing the conclusion that tempo does not meaningfully impact overall team success. 
+- The scatterplot shows no clear trend between tempo and total wins. The regression line is nearly flat, reinforcing the conclusion that tempo does not meaningfully impact overall team success.
 
 ```{r}
 #Regression Analysis
@@ -291,8 +290,8 @@ The model explains approximately 64.5% of the variation in total wins (R² = 0.6
 
 Conclusion: Overall, the analysis shows that tempo has little to no meaningful relationship with offensive success, defensive success, or total wins in college basketball. While there is a slight tendency for faster teams to have worse defensive efficiency, the relationship is weak and not a major factor in determining outcomes. In contrast, both offensive and defensive efficiency are strongly associated with winning, and regression results confirm that these metrics are the primary drivers of success. This suggests that tempo influences a team’s style of play rather than its effectiveness, as teams can succeed at both fast and slow paces as long as they are efficient offensively and defensively.
 
-
 ## Question 6: Do some conferences show consistently different statistical profiles than others?
+
 To examine whether conferences exhibit different statistical profiles, we compare average tempo, offensive efficiency, defensive efficiency, and wins across conferences using summary statistics and visualizations.
 
 ```{r}
@@ -313,7 +312,6 @@ conf_summary <- cbb %>%
 
 kable(conf_summary)
 ```
-
 
 - Interpretation: The summary statistics reveal clear differences in statistical profiles across conferences. Power conferences such as the Big 12, Big Ten, SEC, ACC, and Big East consistently demonstrate higher average wins, stronger offensive efficiency, and better defensive performance compared to other conferences. In particular, the Big 12 stands out with the highest average offensive efficiency and win totals, indicating a strong overall competitive profile.
 
@@ -370,4 +368,3 @@ ggplot(cbb_top, aes(x = reorder(conf, adj_t, median), y = adj_t)) +
 Taken together, the visualizations show clear differences in offensive and defensive efficiency across conferences, with power conferences consistently outperforming others. In contrast, tempo remains relatively uniform across all conferences, suggesting that differences in team success are driven by efficiency rather than pace of play.
 
 - Conclusion: Overall, the analysis demonstrates that conferences exhibit consistently different statistical profiles. Power conferences tend to have more efficient offenses, stronger defenses, and higher win totals, while lower-tier conferences show weaker performance across these metrics. Despite these differences, tempo remains largely consistent across conferences, reinforcing the conclusion that pace of play does not significantly distinguish team success. These findings suggest that conference affiliation is strongly associated with team quality and performance characteristics in college basketball.
-
