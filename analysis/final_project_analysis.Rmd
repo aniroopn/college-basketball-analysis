@@ -6,6 +6,8 @@ always_allow_html: true
 date: "2026-04-26"
 ---
 
+#### Aniroop Naladala, Wyatt Sinclair, Abhinav Pillai, Alyvia Fager
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,  warning = FALSE,  message = FALSE, fig.width = 11, fig.height = 7.5)
 

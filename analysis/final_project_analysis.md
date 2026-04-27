@@ -2,6 +2,8 @@ College Basketball Analysis
 ================
 2026-04-26
 
+#### Aniroop Naladala, Wyatt Sinclair, Abhinav Pillai, Alyvia Fager
+
 ``` r
 cbb_raw <- read_csv("../data/cbb.csv")
 
