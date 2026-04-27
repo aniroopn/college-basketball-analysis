@@ -35,8 +35,7 @@ glimpse(cbb_raw)
     ## $ SEED       <chr> "1", "1", "3", "3", "1", "8", "4", "1", "1", "1", "2", "1",…
     ## $ YEAR       <dbl> 2016, 2015, 2018, 2019, 2017, 2014, 2013, 2015, 2019, 2017,…
 
-**Question 1:** Which team statistics are mostly strongly associated
-with wins?
+## Question 1: Which team statistics are most strongly associated with wins?
 
 ``` r
 # Clean the data and create variables
@@ -48,35 +47,501 @@ cbb_clean <- cbb_raw %>%
   ) %>%
   select(win_pct, adjoe, adjde, adj_t, barthag, efg_o, efg_d, efficiency_margin) %>%
   drop_na()
+```
 
+To prepare the data for analysis, I first cleaned and simplified the
+dataset. I used `clean_names()` to standardize all column names, making
+them lowercase and easier to work with. Then, I created two new
+variables: win percentage (`win_pct`), which measures team success more
+accurately than total wins, and efficiency margin, which captures the
+difference between offensive and defensive efficiency.
+
+Next, I selected only the variables relevant to my analysis, focusing on
+performance metrics such as offensive efficiency, defensive efficiency,
+shooting efficiency, tempo, and overall team strength. Finally, I
+removed any missing values using `drop_na()` to ensure that the analysis
+was based on complete and consistent data.
+
+Overall, these steps helped create a clean and focused dataset, making
+the results more reliable and easier to interpret.
+
+``` r
 # Correlation matrix
 numeric_vars <- cbb_clean %>%
   select(win_pct, adjoe, adjde, adj_t, barthag, efg_o, efg_d, efficiency_margin)
 
 cor_matrix <- cor(numeric_vars)
 
-cor_matrix
+knitr::kable(
+  cor_matrix,
+  digits = 2,
+  caption = "Table 1: Correlation Matrix of Team Statistics"
+) %>%
+  kable_styling(
+    full_width = FALSE,
+    position = "center",
+    bootstrap_options = c("striped", "hover", "condensed", "bordered")
+  )
 ```
 
-    ##                        win_pct       adjoe      adjde        adj_t     barthag
-    ## win_pct            1.000000000  0.67977255 -0.6227412 -0.005380912  0.74918296
-    ## adjoe              0.679772547  1.00000000 -0.4753384  0.053301412  0.85880299
-    ## adjde             -0.622741180 -0.47533839  1.0000000  0.173549646 -0.83436967
-    ## adj_t             -0.005380912  0.05330141  0.1735496  1.000000000 -0.06433129
-    ## barthag            0.749182961  0.85880299 -0.8343697 -0.064331293  1.00000000
-    ## efg_o              0.613377354  0.73055630 -0.1944235  0.104867801  0.54207415
-    ## efg_d             -0.581155910 -0.29722693  0.7814493  0.216398165 -0.60582262
-    ## efficiency_margin  0.759772930  0.87666231 -0.8399900 -0.062030208  0.98591223
-    ##                        efg_o      efg_d efficiency_margin
-    ## win_pct            0.6133774 -0.5811559        0.75977293
-    ## adjoe              0.7305563 -0.2972269        0.87666231
-    ## adjde             -0.1944235  0.7814493       -0.83998998
-    ## adj_t              0.1048678  0.2163982       -0.06203021
-    ## barthag            0.5420742 -0.6058226        0.98591223
-    ## efg_o              1.0000000 -0.1128963        0.55687420
-    ## efg_d             -0.1128963  1.0000000       -0.61063214
-    ## efficiency_margin  0.5568742 -0.6106321        1.00000000
+<table class="table table-striped table-hover table-condensed table-bordered" style="width: auto !important; margin-left: auto; margin-right: auto;">
 
+<caption>
+
+Table 1: Correlation Matrix of Team Statistics
+</caption>
+
+<thead>
+
+<tr>
+
+<th style="text-align:left;">
+
+</th>
+
+<th style="text-align:right;">
+
+win_pct
+</th>
+
+<th style="text-align:right;">
+
+adjoe
+</th>
+
+<th style="text-align:right;">
+
+adjde
+</th>
+
+<th style="text-align:right;">
+
+adj_t
+</th>
+
+<th style="text-align:right;">
+
+barthag
+</th>
+
+<th style="text-align:right;">
+
+efg_o
+</th>
+
+<th style="text-align:right;">
+
+efg_d
+</th>
+
+<th style="text-align:right;">
+
+efficiency_margin
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td style="text-align:left;">
+
+win_pct
+</td>
+
+<td style="text-align:right;">
+
+1.00
+</td>
+
+<td style="text-align:right;">
+
+0.68
+</td>
+
+<td style="text-align:right;">
+
+-0.62
+</td>
+
+<td style="text-align:right;">
+
+-0.01
+</td>
+
+<td style="text-align:right;">
+
+0.75
+</td>
+
+<td style="text-align:right;">
+
+0.61
+</td>
+
+<td style="text-align:right;">
+
+-0.58
+</td>
+
+<td style="text-align:right;">
+
+0.76
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+adjoe
+</td>
+
+<td style="text-align:right;">
+
+0.68
+</td>
+
+<td style="text-align:right;">
+
+1.00
+</td>
+
+<td style="text-align:right;">
+
+-0.48
+</td>
+
+<td style="text-align:right;">
+
+0.05
+</td>
+
+<td style="text-align:right;">
+
+0.86
+</td>
+
+<td style="text-align:right;">
+
+0.73
+</td>
+
+<td style="text-align:right;">
+
+-0.30
+</td>
+
+<td style="text-align:right;">
+
+0.88
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+adjde
+</td>
+
+<td style="text-align:right;">
+
+-0.62
+</td>
+
+<td style="text-align:right;">
+
+-0.48
+</td>
+
+<td style="text-align:right;">
+
+1.00
+</td>
+
+<td style="text-align:right;">
+
+0.17
+</td>
+
+<td style="text-align:right;">
+
+-0.83
+</td>
+
+<td style="text-align:right;">
+
+-0.19
+</td>
+
+<td style="text-align:right;">
+
+0.78
+</td>
+
+<td style="text-align:right;">
+
+-0.84
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+adj_t
+</td>
+
+<td style="text-align:right;">
+
+-0.01
+</td>
+
+<td style="text-align:right;">
+
+0.05
+</td>
+
+<td style="text-align:right;">
+
+0.17
+</td>
+
+<td style="text-align:right;">
+
+1.00
+</td>
+
+<td style="text-align:right;">
+
+-0.06
+</td>
+
+<td style="text-align:right;">
+
+0.10
+</td>
+
+<td style="text-align:right;">
+
+0.22
+</td>
+
+<td style="text-align:right;">
+
+-0.06
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+barthag
+</td>
+
+<td style="text-align:right;">
+
+0.75
+</td>
+
+<td style="text-align:right;">
+
+0.86
+</td>
+
+<td style="text-align:right;">
+
+-0.83
+</td>
+
+<td style="text-align:right;">
+
+-0.06
+</td>
+
+<td style="text-align:right;">
+
+1.00
+</td>
+
+<td style="text-align:right;">
+
+0.54
+</td>
+
+<td style="text-align:right;">
+
+-0.61
+</td>
+
+<td style="text-align:right;">
+
+0.99
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+efg_o
+</td>
+
+<td style="text-align:right;">
+
+0.61
+</td>
+
+<td style="text-align:right;">
+
+0.73
+</td>
+
+<td style="text-align:right;">
+
+-0.19
+</td>
+
+<td style="text-align:right;">
+
+0.10
+</td>
+
+<td style="text-align:right;">
+
+0.54
+</td>
+
+<td style="text-align:right;">
+
+1.00
+</td>
+
+<td style="text-align:right;">
+
+-0.11
+</td>
+
+<td style="text-align:right;">
+
+0.56
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+efg_d
+</td>
+
+<td style="text-align:right;">
+
+-0.58
+</td>
+
+<td style="text-align:right;">
+
+-0.30
+</td>
+
+<td style="text-align:right;">
+
+0.78
+</td>
+
+<td style="text-align:right;">
+
+0.22
+</td>
+
+<td style="text-align:right;">
+
+-0.61
+</td>
+
+<td style="text-align:right;">
+
+-0.11
+</td>
+
+<td style="text-align:right;">
+
+1.00
+</td>
+
+<td style="text-align:right;">
+
+-0.61
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+efficiency_margin
+</td>
+
+<td style="text-align:right;">
+
+0.76
+</td>
+
+<td style="text-align:right;">
+
+0.88
+</td>
+
+<td style="text-align:right;">
+
+-0.84
+</td>
+
+<td style="text-align:right;">
+
+-0.06
+</td>
+
+<td style="text-align:right;">
+
+0.99
+</td>
+
+<td style="text-align:right;">
+
+0.56
+</td>
+
+<td style="text-align:right;">
+
+-0.61
+</td>
+
+<td style="text-align:right;">
+
+1.00
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+  
 The correlation table provides numerical evidence of the relationships
 between team statistics and win percentage. Consistent with the heatmap,
 efficiency margin shows the strongest positive relationship with winning
@@ -95,6 +560,11 @@ adjusted tempo has almost no correlation with win percentage (−0.01),
 suggesting that the pace of play does not significantly influence team
 success.
 
+Overall, these results suggest that team success is driven more by
+efficiency-based performance metrics rather than style of play. Teams
+that can consistently generate scoring advantages over their opponents
+are far more likely to win games.
+
 ``` r
 # correlation plot
 corrplot(
@@ -108,7 +578,7 @@ corrplot(
 )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 **Figure 1:** Correlation between team statistics and win percentage
 
@@ -120,9 +590,16 @@ with offense showing a slightly stronger association. BARTHAG is also
 highly correlated with both efficiency margin and win percentage,
 reinforcing its role as a composite performance metric. In contrast,
 tempo exhibits near-zero correlation, suggesting that pace of play does
-not significantly influence team success. Overall these results suggest
-that team success is driven more by efficiency based performance than by
-style of play.
+not significantly influence team success.
+
+In conclusion, the analysis clearly shows that efficiency-based metrics
+are the strongest indicators of team success in college basketball.
+Teams that consistently perform well on both offense and defense—and
+ultimately achieve a high efficiency margin—are far more likely to win
+games. In contrast, stylistic factors such as tempo have little to no
+impact on overall success. This suggests that focusing on maximizing
+scoring efficiency and minimizing opponent scoring is far more important
+than the pace at which a team plays.
 
 ``` r
 cbb_clean <- cbb_raw %>%
@@ -381,7 +858,7 @@ ggplot(cbb, aes(x = adj_t, y = adjoe)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 - The scatterplot shows a very slight positive trend between tempo and
   offensive efficiency, but the relationship is weak and the data points
@@ -400,7 +877,7 @@ ggplot(cbb, aes(x = adj_t, y = adjde)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 - The plot shows a slight upward trend, indicating that higher tempo is
   associated with higher defensive efficiency values. Since higher
@@ -420,7 +897,7 @@ ggplot(cbb, aes(x = adj_t, y = w)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 - The scatterplot shows no clear trend between tempo and total wins. The
   regression line is nearly flat, reinforcing the conclusion that tempo
@@ -587,7 +1064,7 @@ ggplot(cbb_top, aes(x = reorder(conf, adjoe, median), y = adjoe)) +
        y = "Adj Offensive Efficiency")
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 - Interpretation: The boxplot shows that power conferences such as the
   ACC, Big Ten, and SEC have higher median offensive efficiency than
@@ -609,7 +1086,7 @@ ggplot(cbb_top, aes(x = reorder(conf, adjde, median), y = adjde)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 - Interpretation: The boxplot shows that power conferences such as the
   Big Ten, SEC, and ACC have lower median defensive efficiency values,
@@ -628,7 +1105,7 @@ ggplot(cbb_top, aes(x = reorder(conf, adj_t, median), y = adj_t)) +
        y = "Adjusted Tempo")
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 - Interpretation: The boxplot shows that tempo is very similar across
   all conferences, with median values clustered in a narrow range and

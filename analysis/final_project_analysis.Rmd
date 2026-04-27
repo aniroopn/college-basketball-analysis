@@ -2,6 +2,7 @@
 title: "College Basketball Analysis"
 authors: "Wyatt Sinclair, Aniroop Naladala, Abhinav Pillai, Alyvia Fager"
 output: github_document
+always_allow_html: true
 date: "2026-04-26"
 ---
 
@@ -13,6 +14,7 @@ library(janitor)
 library(scales)
 library(knitr)
 library(corrplot)
+library(kableExtra)
 ```
 
 ```{r Data Loading}
@@ -21,7 +23,7 @@ cbb_raw <- read_csv("../data/cbb.csv")
 glimpse(cbb_raw)
 ```
 
-**Question 1:** Which team statistics are mostly strongly associated with wins?
+## Question 1: Which team statistics are most strongly associated with wins?
 
 ```{r}
 # Clean the data and create variables
@@ -34,18 +36,39 @@ cbb_clean <- cbb_raw %>%
   select(win_pct, adjoe, adjde, adj_t, barthag, efg_o, efg_d, efficiency_margin) %>%
   drop_na()
 
+```
+
+To prepare the data for analysis, I first cleaned and simplified the dataset. I used `clean_names()` to standardize all column names, making them lowercase and easier to work with. Then, I created two new variables: win percentage (`win_pct`), which measures team success more accurately than total wins, and efficiency margin, which captures the difference between offensive and defensive efficiency.
+
+Next, I selected only the variables relevant to my analysis, focusing on performance metrics such as offensive efficiency, defensive efficiency, shooting efficiency, tempo, and overall team strength. Finally, I removed any missing values using `drop_na()` to ensure that the analysis was based on complete and consistent data.
+
+Overall, these steps helped create a clean and focused dataset, making the results more reliable and easier to interpret.
+
+```{r}
 # Correlation matrix
 numeric_vars <- cbb_clean %>%
   select(win_pct, adjoe, adjde, adj_t, barthag, efg_o, efg_d, efficiency_margin)
 
 cor_matrix <- cor(numeric_vars)
 
-cor_matrix
+knitr::kable(
+  cor_matrix,
+  digits = 2,
+  caption = "Table 1: Correlation Matrix of Team Statistics"
+) %>%
+  kable_styling(
+    full_width = FALSE,
+    position = "center",
+    bootstrap_options = c("striped", "hover", "condensed", "bordered")
+  )
 ```
 
+\
 The correlation table provides numerical evidence of the relationships between team statistics and win percentage. Consistent with the heatmap, efficiency margin shows the strongest positive relationship with winning (0.76), indicating that teams that outscore their opponents by larger margins tend to be more successful. Offensive efficiency (0.68) also has a strong positive association with win percentage, while defensive efficiency (−0.62) has a strong negative relationship, meaning that teams that allow fewer points perform better.
 
 Additionally, BARTHAG has a high correlation with both win percentage (0.75) and efficiency margin (0.99), reinforcing its role as a comprehensive measure of team strength. Shooting efficiency metrics, such as effective field goal percentage on offense (0.61) and defense (−0.58), also show meaningful relationships with winning. In contrast, adjusted tempo has almost no correlation with win percentage (−0.01), suggesting that the pace of play does not significantly influence team success.
+
+Overall, these results suggest that team success is driven more by efficiency-based performance metrics rather than style of play. Teams that can consistently generate scoring advantages over their opponents are far more likely to win games.
 
 ```{r}
 # correlation plot
@@ -62,7 +85,9 @@ corrplot(
 
 **Figure 1:** Correlation between team statistics and win percentage
 
-The heatmap shows that efficiency margin has the strongest relationship with win percentage (0.76), indicating that teams that outscore opponents by larger margins win more games. Offensive efficiency (0.68) and defensive efficiency (−0.62) are both strongly related to winning, with offense showing a slightly stronger association. BARTHAG is also highly correlated with both efficiency margin and win percentage, reinforcing its role as a composite performance metric. In contrast, tempo exhibits near-zero correlation, suggesting that pace of play does not significantly influence team success. Overall these results suggest that team success is driven more by efficiency based performance than by style of play.
+The heatmap shows that efficiency margin has the strongest relationship with win percentage (0.76), indicating that teams that outscore opponents by larger margins win more games. Offensive efficiency (0.68) and defensive efficiency (−0.62) are both strongly related to winning, with offense showing a slightly stronger association. BARTHAG is also highly correlated with both efficiency margin and win percentage, reinforcing its role as a composite performance metric. In contrast, tempo exhibits near-zero correlation, suggesting that pace of play does not significantly influence team success.
+
+In conclusion, the analysis clearly shows that efficiency-based metrics are the strongest indicators of team success in college basketball. Teams that consistently perform well on both offense and defense—and ultimately achieve a high efficiency margin—are far more likely to win games. In contrast, stylistic factors such as tempo have little to no impact on overall success. This suggests that focusing on maximizing scoring efficiency and minimizing opponent scoring is far more important than the pace at which a team plays.
 
 ```{r Data Cleaning for Question 3}
 cbb_clean <- cbb_raw %>%
