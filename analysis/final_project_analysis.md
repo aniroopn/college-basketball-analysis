@@ -881,6 +881,213 @@ BARTHAG value means that there team was stronger overall. These two
 things winning consistently and being highly rated overall are strong
 indicators of making the mens NCAA tournament.
 
+# Research Question 4
+
+Which variables are most associated with deeper postseason runs?
+
+``` r
+# For this question, we only want teams that made the NCAA tournament.
+# The postseason column tells us how far each team advanced.
+postseason_clean <- cbb_clean %>%
+  filter(!is.na(postseason), postseason != "N/A", postseason != "") %>%
+  mutate(
+    # Create a numeric variable for tournament depth.
+    # Bigger numbers mean the team went farther in the tournament.
+    postseason_round = case_when(
+      postseason == "R68" ~ 1,
+      postseason == "R64" ~ 2,
+      postseason == "R32" ~ 3,
+      postseason == "S16" ~ 4,
+      postseason == "E8" ~ 5,
+      postseason == "F4" ~ 6,
+      postseason == "2ND" ~ 7,
+      postseason == "Champions" ~ 8,
+      TRUE ~ NA_real_
+    ),
+    
+    # Create an ordered factor so the graph puts the rounds in the correct order.
+    postseason_label = factor(
+      postseason,
+      levels = c("R68", "R64", "R32", "S16", "E8", "F4", "2ND", "Champions"),
+      ordered = TRUE
+    )
+  ) %>%
+  filter(!is.na(postseason_round))
+
+# Check how many teams are in each postseason group.
+postseason_clean %>%
+  count(postseason_label) %>%
+  kable(caption = "Number of teams by postseason finish")
+```
+
+| postseason_label |   n |
+|:-----------------|----:|
+| R68              |  48 |
+| R64              | 383 |
+| R32              | 192 |
+| S16              |  96 |
+| E8               |  48 |
+| F4               |  24 |
+| 2ND              |  12 |
+| Champions        |  12 |
+
+Number of teams by postseason finish
+
+``` r
+# This table checks which variables have the strongest relationship
+# with deeper tournament runs.
+# A positive correlation means higher values are connected with going farther.
+# A negative correlation means lower values are connected with going farther.
+q4_correlations <- postseason_clean %>%
+  select(
+    postseason_round,
+    win_pct,
+    adjoe,
+    adjde,
+    barthag,
+    wab,
+    efg_o,
+    efg_d,
+    tor,
+    tord,
+    orb,
+    drb,
+    ftr,
+    ftrd,
+    adj_t
+  ) %>%
+  pivot_longer(
+    cols = -postseason_round,
+    names_to = "variable",
+    values_to = "value"
+  ) %>%
+  group_by(variable) %>%
+  summarise(
+    correlation = cor(value, postseason_round, use = "complete.obs"),
+    abs_correlation = abs(correlation),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(abs_correlation))
+
+# Print the correlation table with readable variable names.
+q4_correlations %>%
+  mutate(
+    variable = recode(
+      variable,
+      win_pct = "Win Percentage",
+      adjoe = "Adjusted Offensive Efficiency",
+      adjde = "Adjusted Defensive Efficiency",
+      barthag = "Power Rating (BARTHAG)",
+      wab = "Wins Above Bubble",
+      efg_o = "Effective FG% Offense",
+      efg_d = "Effective FG% Defense",
+      tor = "Turnover Rate Offense",
+      tord = "Turnover Rate Defense",
+      orb = "Offensive Rebound Rate",
+      drb = "Defensive Rebound Rate",
+      ftr = "Free Throw Rate Offense",
+      ftrd = "Free Throw Rate Defense",
+      adj_t = "Adjusted Tempo"
+    )
+  ) %>%
+  select(variable, correlation) %>%
+  kable(
+    digits = 3,
+    caption = "Correlation between team statistics and deeper postseason runs"
+  )
+```
+
+| variable                      | correlation |
+|:------------------------------|------------:|
+| Wins Above Bubble             |       0.573 |
+| Adjusted Offensive Efficiency |       0.525 |
+| Power Rating (BARTHAG)        |       0.496 |
+| Adjusted Defensive Efficiency |      -0.445 |
+| Win Percentage                |       0.378 |
+| Effective FG% Defense         |      -0.262 |
+| Effective FG% Offense         |       0.241 |
+| Offensive Rebound Rate        |       0.204 |
+| Turnover Rate Offense         |      -0.201 |
+| Free Throw Rate Defense       |      -0.157 |
+| Free Throw Rate Offense       |      -0.080 |
+| Defensive Rebound Rate        |      -0.042 |
+| Adjusted Tempo                |      -0.035 |
+| Turnover Rate Defense         |       0.018 |
+
+Correlation between team statistics and deeper postseason runs
+
+``` r
+# This graph shows the eight variables most associated with deeper postseason runs.
+# We use absolute correlation to find the strongest relationships,
+# whether they are positive or negative.
+q4_correlations %>%
+  slice_max(abs_correlation, n = 8) %>%
+  mutate(
+    variable = recode(
+      variable,
+      win_pct = "Win Percentage",
+      adjoe = "Adjusted Offensive Efficiency",
+      adjde = "Adjusted Defensive Efficiency",
+      barthag = "Power Rating (BARTHAG)",
+      wab = "Wins Above Bubble",
+      efg_o = "Effective FG% Offense",
+      efg_d = "Effective FG% Defense",
+      tor = "Turnover Rate Offense",
+      tord = "Turnover Rate Defense",
+      orb = "Offensive Rebound Rate",
+      drb = "Defensive Rebound Rate",
+      ftr = "Free Throw Rate Offense",
+      ftrd = "Free Throw Rate Defense",
+      adj_t = "Adjusted Tempo"
+    ),
+    
+    # Reorder the bars so the plot is easier to read.
+    variable = fct_reorder(variable, correlation)
+  ) %>%
+  ggplot(aes(x = correlation, y = variable)) +
+  geom_col(width = 0.7) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(
+    title = "Variables Most Associated With Deeper Postseason Runs",
+    subtitle = "Positive values are connected with advancing farther; negative values move in the opposite direction",
+    x = "Correlation With Postseason Round",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 11),
+    panel.grid.minor = element_blank()
+  )
+```
+
+![](final_project_analysis_files/figure-gfm/Stats_Closest_Related_to_postseason_runs-1.png)<!-- -->
+
+``` r
+# This boxplot focuses on BARTHAG, which measures overall team strength.
+# We compare BARTHAG across each postseason finish.
+ggplot(postseason_clean, aes(x = postseason_label, y = barthag)) +
+  geom_boxplot(
+    width = 0.55,
+    outlier.alpha = 0.25
+  ) +
+  labs(
+    title = "Teams With Higher Power Ratings Tend to Advance Farther",
+    subtitle = "BARTHAG measures overall team strength",
+    x = "Postseason Finish",
+    y = "Power Rating (BARTHAG)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 11),
+    axis.text.x = element_text(angle = 30, hjust = 1),
+    panel.grid.minor = element_blank()
+  )
+```
+
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
 ## Question 5: Does tempo relate to offensive success, defensive success, or overall wins?
 
 ``` r
@@ -940,7 +1147,7 @@ ggplot(cbb, aes(x = adj_t, y = adjoe)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 - The scatterplot shows a very slight positive trend between tempo and
   offensive efficiency, but the relationship is weak and the data points
@@ -959,7 +1166,7 @@ ggplot(cbb, aes(x = adj_t, y = adjde)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 - The plot shows a slight upward trend, indicating that higher tempo is
   associated with higher defensive efficiency values. Since higher
@@ -979,7 +1186,7 @@ ggplot(cbb, aes(x = adj_t, y = w)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 - The scatterplot shows no clear trend between tempo and total wins. The
   regression line is nearly flat, reinforcing the conclusion that tempo
@@ -1146,7 +1353,7 @@ ggplot(cbb_top, aes(x = reorder(conf, adjoe, median), y = adjoe)) +
        y = "Adj Offensive Efficiency")
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 - Interpretation: The boxplot shows that power conferences such as the
   ACC, Big Ten, and SEC have higher median offensive efficiency than
@@ -1168,7 +1375,7 @@ ggplot(cbb_top, aes(x = reorder(conf, adjde, median), y = adjde)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 - Interpretation: The boxplot shows that power conferences such as the
   Big Ten, SEC, and ACC have lower median defensive efficiency values,
@@ -1187,7 +1394,7 @@ ggplot(cbb_top, aes(x = reorder(conf, adj_t, median), y = adj_t)) +
        y = "Adjusted Tempo")
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 - Interpretation: The boxplot shows that tempo is very similar across
   all conferences, with median values clustered in a narrow range and

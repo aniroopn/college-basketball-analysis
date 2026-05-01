@@ -281,6 +281,189 @@ ggplot(q3_two_stats, aes(x = made_tournament, y = value)) +
 
 Comments: This shows that teams with a higher win percentage are more likely to make the tournament and I believe this is a strongest factor. Teams that made the tournament had a noticeably higher win percentage than teams that did not. This makes sense because you typically need over a .500 win percentage to make the tournament. Teams with a higher BARTHAG value means that there team was stronger overall. These two things winning consistently and being highly rated overall are strong indicators of making the mens NCAA tournament.
 
+The statistics that best distinguish tournament teams from non-tournament teams are win percentage, BARTHAG, offensive efficiency, and Wins Above Bubble. Win percentage is the easiest to interpret because tournament teams usually win more of their games. BARTHAG is also useful because it summarizes overall team strength. The results show that teams are more likely to make the NCAA tournament when they both win consistently and perform well in efficiency-based ratings.
+
+# Research Question 4
+
+Which variables are most associated with deeper postseason runs?
+
+```{r question_4_postseason_cleaning}
+# For this question, we only want teams that made the NCAA tournament.
+# The postseason column tells us how far each team advanced.
+postseason_clean <- cbb_clean %>%
+  filter(!is.na(postseason), postseason != "N/A", postseason != "") %>%
+  mutate(
+    # Create a numeric variable for tournament depth.
+    # Bigger numbers mean the team went farther in the tournament.
+    postseason_round = case_when(
+      postseason == "R68" ~ 1,
+      postseason == "R64" ~ 2,
+      postseason == "R32" ~ 3,
+      postseason == "S16" ~ 4,
+      postseason == "E8" ~ 5,
+      postseason == "F4" ~ 6,
+      postseason == "2ND" ~ 7,
+      postseason == "Champions" ~ 8,
+      TRUE ~ NA_real_
+    ),
+    
+    # Create an ordered factor so the graph puts the rounds in the correct order.
+    postseason_label = factor(
+      postseason,
+      levels = c("R68", "R64", "R32", "S16", "E8", "F4", "2ND", "Champions"),
+      ordered = TRUE
+    )
+  ) %>%
+  filter(!is.na(postseason_round))
+
+# Check how many teams are in each postseason group.
+postseason_clean %>%
+  count(postseason_label) %>%
+  kable(caption = "Number of teams by postseason finish")
+```
+
+This table shows how the tournament field narrows each round. Most teams appear in the early rounds, while only a small number reach the Final Four, championship game, or win the title. Because fewer teams reach the later rounds, deeper postseason runs are harder to predict and can be affected by upsets, matchups, and single-game performance.
+
+```{r Stats_Correlation}
+# This table checks which variables have the strongest relationship
+# with deeper tournament runs.
+# A positive correlation means higher values are connected with going farther.
+# A negative correlation means lower values are connected with going farther.
+q4_correlations <- postseason_clean %>%
+  select(
+    postseason_round,
+    win_pct,
+    adjoe,
+    adjde,
+    barthag,
+    wab,
+    efg_o,
+    efg_d,
+    tor,
+    tord,
+    orb,
+    drb,
+    ftr,
+    ftrd,
+    adj_t
+  ) %>%
+  pivot_longer(
+    cols = -postseason_round,
+    names_to = "variable",
+    values_to = "value"
+  ) %>%
+  group_by(variable) %>%
+  summarise(
+    correlation = cor(value, postseason_round, use = "complete.obs"),
+    abs_correlation = abs(correlation),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(abs_correlation))
+
+# Print the correlation table with readable variable names.
+q4_correlations %>%
+  mutate(
+    variable = recode(
+      variable,
+      win_pct = "Win Percentage",
+      adjoe = "Adjusted Offensive Efficiency",
+      adjde = "Adjusted Defensive Efficiency",
+      barthag = "Power Rating (BARTHAG)",
+      wab = "Wins Above Bubble",
+      efg_o = "Effective FG% Offense",
+      efg_d = "Effective FG% Defense",
+      tor = "Turnover Rate Offense",
+      tord = "Turnover Rate Defense",
+      orb = "Offensive Rebound Rate",
+      drb = "Defensive Rebound Rate",
+      ftr = "Free Throw Rate Offense",
+      ftrd = "Free Throw Rate Defense",
+      adj_t = "Adjusted Tempo"
+    )
+  ) %>%
+  select(variable, correlation) %>%
+  kable(
+    digits = 3,
+    caption = "Correlation between team statistics and deeper postseason runs"
+  )
+```
+
+The correlation table shows which statistics have the strongest relationship with advancing farther in the postseason. Wins Above Bubble has the highest positive correlation, followed by adjusted offensive efficiency, BARTHAG, and win percentage. This suggests that teams with stronger resumes, better offenses, stronger overall ratings, and better records tend to make deeper tournament runs.
+
+```{r Stats_Closest_Related_to_postseason_runs}
+# This graph shows the eight variables most associated with deeper postseason runs.
+# We use absolute correlation to find the strongest relationships,
+# whether they are positive or negative.
+q4_correlations %>%
+  slice_max(abs_correlation, n = 8) %>%
+  mutate(
+    variable = recode(
+      variable,
+      win_pct = "Win Percentage",
+      adjoe = "Adjusted Offensive Efficiency",
+      adjde = "Adjusted Defensive Efficiency",
+      barthag = "Power Rating (BARTHAG)",
+      wab = "Wins Above Bubble",
+      efg_o = "Effective FG% Offense",
+      efg_d = "Effective FG% Defense",
+      tor = "Turnover Rate Offense",
+      tord = "Turnover Rate Defense",
+      orb = "Offensive Rebound Rate",
+      drb = "Defensive Rebound Rate",
+      ftr = "Free Throw Rate Offense",
+      ftrd = "Free Throw Rate Defense",
+      adj_t = "Adjusted Tempo"
+    ),
+    
+    # Reorder the bars so the plot is easier to read.
+    variable = fct_reorder(variable, correlation)
+  ) %>%
+  ggplot(aes(x = correlation, y = variable)) +
+  geom_col(width = 0.7) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(
+    title = "Variables Most Associated With Deeper Postseason Runs",
+    subtitle = "Positive values are connected with advancing farther; negative values move in the opposite direction",
+    x = "Correlation With Postseason Round",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 11),
+    panel.grid.minor = element_blank()
+  )
+```
+
+This graph makes the strongest relationships easier to compare visually. Positive bars show variables associated with deeper tournament runs, while negative bars show variables that move in the opposite direction. Wins Above Bubble, offensive efficiency, BARTHAG, and win percentage stand out as the strongest positive indicators. Adjusted defensive efficiency is negative because lower defensive efficiency values are better, so the negative relationship still suggests that stronger defense can help teams advance.
+
+```{r}
+# This boxplot focuses on BARTHAG, which measures overall team strength.
+# We compare BARTHAG across each postseason finish.
+ggplot(postseason_clean, aes(x = postseason_label, y = barthag)) +
+  geom_boxplot(
+    width = 0.55,
+    outlier.alpha = 0.25
+  ) +
+  labs(
+    title = "Teams With Higher Power Ratings Tend to Advance Farther",
+    subtitle = "BARTHAG measures overall team strength",
+    x = "Postseason Finish",
+    y = "Power Rating (BARTHAG)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 11),
+    axis.text.x = element_text(angle = 30, hjust = 1),
+    panel.grid.minor = element_blank()
+  )
+```
+
+This boxplot shows that teams advancing farther in the tournament usually have higher BARTHAG values. The median power rating generally increases from the early rounds to the later rounds, especially for teams that reach the Elite Eight, Final Four, championship game, or win the title. There is still overlap between groups because March Madness includes upsets, but the overall pattern shows that stronger teams are more likely to make deeper runs.
+
+The variables most associated with deeper postseason runs are Wins Above Bubble, adjusted offensive efficiency, BARTHAG, and win percentage. These variables show that tournament success is connected to both resume strength and team quality. Offensive efficiency appears especially important because teams need to score efficiently against stronger opponents as the tournament progresses. Overall, deeper postseason teams tend to have strong resumes, efficient offenses, strong overall power ratings, and good regular-season records.
+
 ## Question 5: Does tempo relate to offensive success, defensive success, or overall wins?
 
 ```{r}
