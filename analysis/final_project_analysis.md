@@ -107,7 +107,9 @@ glimpse(cbb_raw)
     ## $ SEED       <chr> "1", "1", "3", "3", "1", "8", "4", "1", "1", "1", "2", "1",…
     ## $ YEAR       <dbl> 2016, 2015, 2018, 2019, 2017, 2014, 2013, 2015, 2019, 2017,…
 
-## Question 1: Which team statistics are most strongly associated with wins?
+# Research Question 1
+
+## Which team statistics are most strongly associated with wins?
 
 #### Cleaning for Question 1:
 
@@ -681,7 +683,145 @@ impact on overall success. This suggests that focusing on maximizing
 scoring efficiency and minimizing opponent scoring is far more important
 than the pace at which a team plays.
 
-#### Cleaning for Question 3:
+# Research Question 2
+
+## Is offensive efficiency or defensive efficiency more strongly related to win percentage?
+
+### Cleaning for Question 2:
+
+``` r
+# Clean the data and create variables
+cbb_clean <- cbb_raw %>%
+  clean_names() %>%
+  mutate(
+    # Create win percentage
+    win_pct = w / g
+  ) %>%
+  filter(
+    !is.na(win_pct),
+    win_pct >= 0,
+    win_pct <= 1
+  )
+
+glimpse(cbb_clean)
+```
+
+    ## Rows: 4,247
+    ## Columns: 25
+    ## $ team       <chr> "North Carolina", "Wisconsin", "Michigan", "Texas Tech", "G…
+    ## $ conf       <chr> "ACC", "B10", "B10", "B12", "WCC", "SEC", "B10", "ACC", "AC…
+    ## $ g          <dbl> 40, 40, 40, 38, 39, 40, 38, 39, 38, 39, 40, 40, 40, 40, 36,…
+    ## $ w          <dbl> 33, 36, 33, 31, 37, 29, 30, 35, 35, 33, 35, 36, 32, 35, 27,…
+    ## $ adjoe      <dbl> 123.3, 129.1, 114.4, 115.2, 117.8, 117.2, 121.5, 125.2, 123…
+    ## $ adjde      <dbl> 94.9, 93.6, 90.4, 85.2, 86.3, 96.2, 93.7, 90.6, 89.9, 91.5,…
+    ## $ barthag    <dbl> 0.9531, 0.9758, 0.9375, 0.9696, 0.9728, 0.9062, 0.9522, 0.9…
+    ## $ efg_o      <dbl> 52.6, 54.8, 53.9, 53.5, 56.6, 49.9, 54.6, 56.6, 55.2, 51.7,…
+    ## $ efg_d      <dbl> 48.1, 47.7, 47.7, 43.0, 41.1, 46.0, 48.0, 46.5, 44.7, 48.1,…
+    ## $ tor        <dbl> 15.4, 12.4, 14.0, 17.7, 16.2, 18.1, 14.6, 16.3, 14.7, 16.2,…
+    ## $ tord       <dbl> 18.2, 15.8, 19.5, 22.8, 17.1, 16.1, 18.7, 18.6, 17.5, 18.6,…
+    ## $ orb        <dbl> 40.7, 32.1, 25.5, 27.4, 30.0, 42.0, 32.5, 35.8, 30.4, 41.3,…
+    ## $ drb        <dbl> 30.0, 23.7, 24.9, 28.7, 26.2, 29.7, 29.4, 30.2, 25.4, 25.0,…
+    ## $ ftr        <dbl> 32.3, 36.2, 30.7, 32.9, 39.0, 51.8, 28.4, 39.8, 29.1, 34.3,…
+    ## $ ftrd       <dbl> 30.4, 22.4, 30.0, 36.6, 26.9, 36.8, 22.7, 23.9, 26.3, 31.6,…
+    ## $ x2p_o      <dbl> 53.9, 54.8, 54.7, 52.8, 56.3, 50.0, 53.4, 55.9, 52.5, 51.0,…
+    ## $ x2p_d      <dbl> 44.6, 44.7, 46.8, 41.9, 40.0, 44.9, 47.6, 46.3, 45.7, 46.3,…
+    ## $ x3p_o      <dbl> 32.7, 36.5, 35.2, 36.5, 38.2, 33.2, 37.9, 38.7, 39.5, 35.5,…
+    ## $ x3p_d      <dbl> 36.2, 37.5, 33.2, 29.7, 29.0, 32.2, 32.6, 31.4, 28.9, 33.9,…
+    ## $ adj_t      <dbl> 71.7, 59.3, 65.9, 67.5, 71.5, 65.9, 64.8, 66.4, 60.7, 72.8,…
+    ## $ wab        <dbl> 8.6, 11.3, 6.9, 7.0, 7.7, 3.9, 6.2, 10.7, 11.1, 8.4, 8.9, 1…
+    ## $ postseason <chr> "2ND", "2ND", "2ND", "2ND", "2ND", "2ND", "2ND", "Champions…
+    ## $ seed       <chr> "1", "1", "3", "3", "1", "8", "4", "1", "1", "1", "2", "1",…
+    ## $ year       <dbl> 2016, 2015, 2018, 2019, 2017, 2014, 2013, 2015, 2019, 2017,…
+    ## $ win_pct    <dbl> 0.8250000, 0.9000000, 0.8250000, 0.8157895, 0.9487179, 0.72…
+
+### Analysis:
+
+``` r
+# Build a regression model using offense and defense
+q2_model <- lm(win_pct ~ adjoe + adjde, data = cbb_clean)
+
+# Show results
+summary(q2_model)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = win_pct ~ adjoe + adjde, data = cbb_clean)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.42657 -0.08344 -0.00390  0.08070  0.40834 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  0.3735224  0.0521110   7.168 8.94e-13 ***
+    ## adjoe        0.0120401  0.0002748  43.807  < 2e-16 ***
+    ## adjde       -0.0106393  0.0003099 -34.327  < 2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.1167 on 4244 degrees of freedom
+    ## Multiple R-squared:  0.5795, Adjusted R-squared:  0.5793 
+    ## F-statistic:  2924 on 2 and 4244 DF,  p-value: < 2.2e-16
+
+### Visualization:
+
+``` r
+# Create a smaller dataset for plotting
+q2_long <- cbb_clean %>%
+  select(win_pct, adjoe, adjde) %>%
+  pivot_longer(
+    cols = c(adjoe, adjde),
+    names_to = "statistic",
+    values_to = "value"
+  ) %>%
+  mutate(
+    statistic = recode(
+      statistic,
+      adjoe = "Offensive Efficiency",
+      adjde = "Defensive Efficiency"
+    )
+  )
+
+# Create faceted scatterplots
+ggplot(q2_long, aes(x = value, y = win_pct)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", color = "blue") +
+  facet_wrap(~ statistic, scales = "free_x") +
+  labs(
+    title = "Offensive vs Defensive Efficiency and Win Percentage",
+    x = "Efficiency Value",
+    y = "Win Percentage"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+This graph compares how offensive and defensive efficiency relate to win
+percentage. There is a clear positive relationship between offensive
+efficiency and win percentage, meaning that teams with higher offensive
+efficiency tend to win more games. In contrast, defensive efficiency
+shows a strong negative relationship with win percentage, indicating
+that teams that allow fewer points (lower defensive efficiency values)
+are more successful.
+
+The slope of the offensive efficiency line appears slightly steeper than
+that of defensive efficiency, suggesting that offense may have a
+slightly stronger impact on winning. This means that while both offense
+and defense are important, scoring efficiency may play a larger role in
+determining a team’s success.
+
+Overall, this visualization reinforces that both offensive and defensive
+performance are key factors, but offensive efficiency may be the more
+influential predictor of win percentage.
+
+### Cleaning for Question 3:
 
 ``` r
 cbb_clean <- cbb_raw %>%
@@ -881,6 +1021,14 @@ BARTHAG value means that there team was stronger overall. These two
 things winning consistently and being highly rated overall are strong
 indicators of making the mens NCAA tournament.
 
+The statistics that best distinguish tournament teams from
+non-tournament teams are win percentage, BARTHAG, offensive efficiency,
+and Wins Above Bubble. Win percentage is the easiest to interpret
+because tournament teams usually win more of their games. BARTHAG is
+also useful because it summarizes overall team strength. The results
+show that teams are more likely to make the NCAA tournament when they
+both win consistently and perform well in efficiency-based ratings.
+
 # Research Question 4
 
 Which variables are most associated with deeper postseason runs?
@@ -932,6 +1080,12 @@ postseason_clean %>%
 | Champions        |  12 |
 
 Number of teams by postseason finish
+
+This table shows how the tournament field narrows each round. Most teams
+appear in the early rounds, while only a small number reach the Final
+Four, championship game, or win the title. Because fewer teams reach the
+later rounds, deeper postseason runs are harder to predict and can be
+affected by upsets, matchups, and single-game performance.
 
 ``` r
 # This table checks which variables have the strongest relationship
@@ -1016,6 +1170,13 @@ q4_correlations %>%
 
 Correlation between team statistics and deeper postseason runs
 
+The correlation table shows which statistics have the strongest
+relationship with advancing farther in the postseason. Wins Above Bubble
+has the highest positive correlation, followed by adjusted offensive
+efficiency, BARTHAG, and win percentage. This suggests that teams with
+stronger resumes, better offenses, stronger overall ratings, and better
+records tend to make deeper tournament runs.
+
 ``` r
 # This graph shows the eight variables most associated with deeper postseason runs.
 # We use absolute correlation to find the strongest relationships,
@@ -1063,6 +1224,15 @@ q4_correlations %>%
 
 ![](final_project_analysis_files/figure-gfm/Stats_Closest_Related_to_postseason_runs-1.png)<!-- -->
 
+This graph makes the strongest relationships easier to compare visually.
+Positive bars show variables associated with deeper tournament runs,
+while negative bars show variables that move in the opposite direction.
+Wins Above Bubble, offensive efficiency, BARTHAG, and win percentage
+stand out as the strongest positive indicators. Adjusted defensive
+efficiency is negative because lower defensive efficiency values are
+better, so the negative relationship still suggests that stronger
+defense can help teams advance.
+
 ``` r
 # This boxplot focuses on BARTHAG, which measures overall team strength.
 # We compare BARTHAG across each postseason finish.
@@ -1086,7 +1256,24 @@ ggplot(postseason_clean, aes(x = postseason_label, y = barthag)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+This boxplot shows that teams advancing farther in the tournament
+usually have higher BARTHAG values. The median power rating generally
+increases from the early rounds to the later rounds, especially for
+teams that reach the Elite Eight, Final Four, championship game, or win
+the title. There is still overlap between groups because March Madness
+includes upsets, but the overall pattern shows that stronger teams are
+more likely to make deeper runs.
+
+The variables most associated with deeper postseason runs are Wins Above
+Bubble, adjusted offensive efficiency, BARTHAG, and win percentage.
+These variables show that tournament success is connected to both resume
+strength and team quality. Offensive efficiency appears especially
+important because teams need to score efficiently against stronger
+opponents as the tournament progresses. Overall, deeper postseason teams
+tend to have strong resumes, efficient offenses, strong overall power
+ratings, and good regular-season records.
 
 ## Question 5: Does tempo relate to offensive success, defensive success, or overall wins?
 
@@ -1147,7 +1334,7 @@ ggplot(cbb, aes(x = adj_t, y = adjoe)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 - The scatterplot shows a very slight positive trend between tempo and
   offensive efficiency, but the relationship is weak and the data points
@@ -1166,7 +1353,7 @@ ggplot(cbb, aes(x = adj_t, y = adjde)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 - The plot shows a slight upward trend, indicating that higher tempo is
   associated with higher defensive efficiency values. Since higher
@@ -1186,7 +1373,7 @@ ggplot(cbb, aes(x = adj_t, y = w)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 - The scatterplot shows no clear trend between tempo and total wins. The
   regression line is nearly flat, reinforcing the conclusion that tempo
@@ -1353,7 +1540,7 @@ ggplot(cbb_top, aes(x = reorder(conf, adjoe, median), y = adjoe)) +
        y = "Adj Offensive Efficiency")
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 - Interpretation: The boxplot shows that power conferences such as the
   ACC, Big Ten, and SEC have higher median offensive efficiency than
@@ -1375,7 +1562,7 @@ ggplot(cbb_top, aes(x = reorder(conf, adjde, median), y = adjde)) +
   )
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 - Interpretation: The boxplot shows that power conferences such as the
   Big Ten, SEC, and ACC have lower median defensive efficiency values,
@@ -1394,7 +1581,7 @@ ggplot(cbb_top, aes(x = reorder(conf, adj_t, median), y = adj_t)) +
        y = "Adjusted Tempo")
 ```
 
-![](final_project_analysis_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 - Interpretation: The boxplot shows that tempo is very similar across
   all conferences, with median values clustered in a narrow range and
