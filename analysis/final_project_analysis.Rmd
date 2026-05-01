@@ -59,7 +59,9 @@ cbb_raw <- read_csv("../data/cbb.csv")
 glimpse(cbb_raw)
 ```
 
-## Question 1: Which team statistics are most strongly associated with wins?
+# Research Question 1
+
+## Which team statistics are most strongly associated with wins?
 
 #### Cleaning for Question 1:
 
@@ -129,7 +131,83 @@ The heatmap shows that efficiency margin has the strongest relationship with win
 
 In conclusion, the analysis clearly shows that efficiency-based metrics are the strongest indicators of team success in college basketball. Teams that consistently perform well on both offense and defense—and ultimately achieve a high efficiency margin—are far more likely to win games. In contrast, stylistic factors such as tempo have little to no impact on overall success. This suggests that focusing on maximizing scoring efficiency and minimizing opponent scoring is far more important than the pace at which a team plays.
 
-#### Cleaning for Question 3:
+# Research Question 2
+
+## Is offensive efficiency or defensive efficiency more strongly related to win percentage?
+
+### Cleaning for Question 2:
+
+```{r}
+# Clean the data and create variables
+cbb_clean <- cbb_raw %>%
+  clean_names() %>%
+  mutate(
+    # Create win percentage
+    win_pct = w / g
+  ) %>%
+  filter(
+    !is.na(win_pct),
+    win_pct >= 0,
+    win_pct <= 1
+  )
+
+glimpse(cbb_clean)
+```
+
+### Analysis:
+
+```{r}
+# Build a regression model using offense and defense
+q2_model <- lm(win_pct ~ adjoe + adjde, data = cbb_clean)
+
+# Show results
+summary(q2_model)
+```
+
+### Visualization:
+
+```{r}
+# Create a smaller dataset for plotting
+q2_long <- cbb_clean %>%
+  select(win_pct, adjoe, adjde) %>%
+  pivot_longer(
+    cols = c(adjoe, adjde),
+    names_to = "statistic",
+    values_to = "value"
+  ) %>%
+  mutate(
+    statistic = recode(
+      statistic,
+      adjoe = "Offensive Efficiency",
+      adjde = "Defensive Efficiency"
+    )
+  )
+
+# Create faceted scatterplots
+ggplot(q2_long, aes(x = value, y = win_pct)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", color = "blue") +
+  facet_wrap(~ statistic, scales = "free_x") +
+  labs(
+    title = "Offensive vs Defensive Efficiency and Win Percentage",
+    x = "Efficiency Value",
+    y = "Win Percentage"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+This graph compares how offensive and defensive efficiency relate to win percentage. There is a clear positive relationship between offensive efficiency and win percentage, meaning that teams with higher offensive efficiency tend to win more games. In contrast, defensive efficiency shows a strong negative relationship with win percentage, indicating that teams that allow fewer points (lower defensive efficiency values) are more successful.
+
+The slope of the offensive efficiency line appears slightly steeper than that of defensive efficiency, suggesting that offense may have a slightly stronger impact on winning. This means that while both offense and defense are important, scoring efficiency may play a larger role in determining a team’s success.
+
+Overall, this visualization reinforces that both offensive and defensive performance are key factors, but offensive efficiency may be the more influential predictor of win percentage.
+
+### Cleaning for Question 3:
 
 ```{r Data Cleaning for Question 3}
 cbb_clean <- cbb_raw %>%
