@@ -14,17 +14,17 @@ The goal of this project is to explore team-level data to better understand what
 
 In pursuit of this goal, we will explore the following questions:
 
-1.   Which team statistics are most strongly associated with total wins?
+1.  Which team statistics are most strongly associated with total wins?
 
-2.   Is offensive efficiency or defensive efficiency more strongly related to win percentage?
+2.  Is offensive efficiency or defensive efficiency more strongly related to win percentage?
 
-3.   What statistics best distinguish teams that make the NCAA tournament from teams that do not?
+3.  What statistics best distinguish teams that make the NCAA tournament from teams that do not?
 
-4.   Which variables are most associated with deeper postseason runs?
+4.  Which variables are most associated with deeper postseason runs?
 
-5.   Does tempo relate to offensive success, defensive success, or overall wins?
+5.  Does tempo relate to offensive success, defensive success, or overall wins?
 
-6.   Do some conferences show consistently different statistical profiles than others?
+6.  Do some conferences show consistently different statistical profiles than others?
 
 These are the main questions we aim to answer through the completion of this project. With our findings, we hope to better understand the key characteristics that contribute to success in college basketball and highlight the importance of efficiency-based metrics in evaluating team performance.
 
