@@ -764,6 +764,26 @@ summary(q2_model)
     ## Multiple R-squared:  0.5795, Adjusted R-squared:  0.5793 
     ## F-statistic:  2924 on 2 and 4244 DF,  p-value: < 2.2e-16
 
+To better understand the relative importance of offensive and defensive
+efficiency, a multiple linear regression model was used with win
+percentage as the response variable and both offensive efficiency
+(adjoe) and defensive efficiency (adjde) as predictors.
+
+The results show that both offensive and defensive efficiency are highly
+significant predictors of winning (p \< 0.001). Offensive efficiency has
+a positive coefficient (0.012), meaning that teams with higher scoring
+efficiency tend to have higher win percentages. Defensive efficiency has
+a negative coefficient (-0.0106), indicating that teams that allow fewer
+points (lower defensive efficiency values) also win more games.
+
+Comparing the magnitudes of the coefficients suggests that offensive
+efficiency has a slightly stronger effect on win percentage than
+defensive efficiency, although both play a major role in team success.
+
+The model explains approximately 58% of the variation in win percentage
+(R² = 0.58), indicating that efficiency-based metrics are strong
+predictors of overall team performance.
+
 ### Visualization:
 
 ``` r
