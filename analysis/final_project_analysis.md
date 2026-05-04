@@ -1779,6 +1779,105 @@ stronger relationship.
 
 ## Question 8: Which conferences have the highest average win percentage?
 
+``` r
+cbb_q8 <- cbb_raw |>
+  clean_names() |>
+  mutate(
+    win_pct = w / g
+  ) |>
+  filter(
+    !is.na(win_pct),
+    win_pct >= 0,
+    win_pct <= 1
+  )
+```
+
+``` r
+conf_win_summary <- cbb_q8 |>
+  group_by(conf) |>
+  summarise(
+    win_pct_avg = mean(win_pct, na.rm = TRUE),
+    teams = n(),
+    .groups = "drop"
+  ) |>
+  arrange(desc(win_pct_avg))
+
+kable(
+  conf_win_summary,
+  digits = 3,
+  caption = "Average Win Percentage by Conference"
+)
+```
+
+| conf | win_pct_avg | teams |
+|:-----|------------:|------:|
+| B12  |       0.607 |   130 |
+| B10  |       0.591 |   168 |
+| Ind  |       0.586 |     1 |
+| BE   |       0.584 |   130 |
+| SEC  |       0.582 |   170 |
+| ACC  |       0.582 |   180 |
+| P12  |       0.566 |   132 |
+| MWC  |       0.556 |   130 |
+| Amer |       0.556 |   127 |
+| WCC  |       0.548 |   119 |
+| A10  |       0.542 |   172 |
+| MVC  |       0.541 |   126 |
+| CUSA |       0.538 |   156 |
+| SB   |       0.531 |   145 |
+| MAC  |       0.527 |   144 |
+| WAC  |       0.524 |   115 |
+| SC   |       0.515 |   123 |
+| Ivy  |       0.512 |    88 |
+| CAA  |       0.505 |   131 |
+| Sum  |       0.505 |   107 |
+| BW   |       0.502 |   119 |
+| OVC  |       0.494 |   138 |
+| ASun |       0.493 |   119 |
+| Horz |       0.492 |   124 |
+| BSth |       0.491 |   129 |
+| BSky |       0.483 |   133 |
+| AE   |       0.479 |   110 |
+| MAAC |       0.477 |   133 |
+| Slnd |       0.476 |   141 |
+| Pat  |       0.472 |   118 |
+| NEC  |       0.447 |   119 |
+| MEAC |       0.409 |   131 |
+| SWAC |       0.389 |   128 |
+| GWC  |       0.383 |     5 |
+| ind  |       0.330 |     6 |
+
+Average Win Percentage by Conference
+
+- Interpretation: The table above displays the average winning
+  percentage for each conference. This is done by grouping the teams
+  into their conferences and calculating their mean win percentages.
+  This is important in comparing overall performance across the
+  conferences so we can determine which conferences have the highest
+  average win percentage.
+
+``` r
+ggplot(conf_win_summary |>
+         slice_head(n = 10),
+       aes(x = reorder(conf, win_pct_avg), y = win_pct_avg)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Top 10 Conferences by Average Win Percentage",
+    x = "Conference",
+    y = "Average Win Percentage"
+  )
+```
+
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+- Interpretation: The above bar chart displays the top 10 conferences
+  based on highest average win percentages. The conferences with the
+  highest average win percentages are at the top of the chart.
+
+- Conclusion: Overall, this analysis shows that there are definitely
+  differences in average win percentages across conferences.
+
 ## Conclusion:
 
 In conclusion, our analysis of college basketball team performance

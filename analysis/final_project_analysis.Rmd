@@ -801,8 +801,6 @@ cbb_q8 <- cbb_raw |>
   )
 ```
 
-<<<<<<< HEAD
-=======
 ```{r}
 conf_win_summary <- cbb_q8 |>
   group_by(conf) |>
@@ -819,6 +817,7 @@ kable(
   caption = "Average Win Percentage by Conference"
 )
 ```
+
 - Interpretation: The table above displays the average winning percentage for each conference. This is done by grouping the teams into their conferences and calculating their mean win percentages. This is important in comparing overall performance across the conferences so we can determine which conferences have the highest average win percentage.
 
 ```{r}
@@ -833,11 +832,11 @@ ggplot(conf_win_summary |>
     y = "Average Win Percentage"
   )
 ```
-- Interpretation: The above bar chart displays the top 10 conferences based on highest average win percentages. The conferences with the highest average win percentages are at the top of the chart.  
 
-- Conclusion: Overall, this analysis shows that there are definitely differences in average win percentages across conferences. 
+- Interpretation: The above bar chart displays the top 10 conferences based on highest average win percentages. The conferences with the highest average win percentages are at the top of the chart.
 
->>>>>>> 3a3859367f89a57a5c8daa3a3d60e8911c9518bf
+- Conclusion: Overall, this analysis shows that there are definitely differences in average win percentages across conferences.
+
 ## Conclusion:
 
 In conclusion, our analysis of college basketball team performance provides clear evidence about what truly drives success in the sport. Across all of our research questions, a consistent pattern emerged: efficiency-based statistics, rather than stylistic choices like tempo, are the most important factors in determining winning outcomes and postseason success.
