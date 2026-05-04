@@ -32,6 +32,11 @@ In pursuit of this goal, we will explore the following questions:
 6.  Do some conferences show consistently different statistical profiles
     than others?
 
+7.  Which has a higher impact on winning, shooting efficiency or
+    turnover rate?
+
+8.  Which conferences have the highest average win percentage?
+
 These are the main questions we aim to answer through the completion of
 this project. With our findings, we hope to better understand the key
 characteristics that contribute to success in college basketball and
