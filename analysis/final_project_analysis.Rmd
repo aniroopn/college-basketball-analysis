@@ -789,8 +789,55 @@ It is important to note that the relationship in the right panel appears slightl
 ## Question 8: Which conferences have the highest average win percentage?
 
 ```{r}
+cbb_q8 <- cbb_raw |>
+  clean_names() |>
+  mutate(
+    win_pct = w / g
+  ) |>
+  filter(
+    !is.na(win_pct),
+    win_pct >= 0,
+    win_pct <= 1
+  )
 ```
 
+<<<<<<< HEAD
+=======
+```{r}
+conf_win_summary <- cbb_q8 |>
+  group_by(conf) |>
+  summarise(
+    win_pct_avg = mean(win_pct, na.rm = TRUE),
+    teams = n(),
+    .groups = "drop"
+  ) |>
+  arrange(desc(win_pct_avg))
+
+kable(
+  conf_win_summary,
+  digits = 3,
+  caption = "Average Win Percentage by Conference"
+)
+```
+- Interpretation: The table above displays the average winning percentage for each conference. This is done by grouping the teams into their conferences and calculating their mean win percentages. This is important in comparing overall performance across the conferences so we can determine which conferences have the highest average win percentage.
+
+```{r}
+ggplot(conf_win_summary |>
+         slice_head(n = 10),
+       aes(x = reorder(conf, win_pct_avg), y = win_pct_avg)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Top 10 Conferences by Average Win Percentage",
+    x = "Conference",
+    y = "Average Win Percentage"
+  )
+```
+- Interpretation: The above bar chart displays the top 10 conferences based on highest average win percentages. The conferences with the highest average win percentages are at the top of the chart.  
+
+- Conclusion: Overall, this analysis shows that there are definitely differences in average win percentages across conferences. 
+
+>>>>>>> 3a3859367f89a57a5c8daa3a3d60e8911c9518bf
 ## Conclusion:
 
 In conclusion, our analysis of college basketball team performance provides clear evidence about what truly drives success in the sport. Across all of our research questions, a consistent pattern emerged: efficiency-based statistics, rather than stylistic choices like tempo, are the most important factors in determining winning outcomes and postseason success.
