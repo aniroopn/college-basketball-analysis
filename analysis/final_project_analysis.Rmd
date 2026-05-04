@@ -748,17 +748,15 @@ kable(
   caption = "The Correlation of Shooting Efficiency and Turnover Rate with Win Percentage"
 )
 ```
-- Interpretation: The correlation table above displays the correlation between win percentage and both variables shooting efficiency and turnover rate. The effective field goal percentage has a strong positive correlation of 0.613, while turnover rate has a moderate negative correlation of -0.426. This indicates that while both shooting efficiency and turnover rate effect win percentage, shooting efficiency has a higher impact. 
 
-- Interpretation: The correlation table above displays the correlation between win percentage and both variables shooting efficiency and turnover rate. The effective field goal percentage has a strong positive correlation of 0.613, while turnover rate has a moderate negative correlation of -0.426. This indicates that while both shooting efficiency and turnover rate effect win percentage, shooting efficiency has a higher impact.
+- Interpretation: The correlation table above displays the correlation between win percentage and both variables shooting efficiency and turnover rate. The effective field goal percentage has a strong positive correlation of 0.613, while turnover rate has a moderate negative correlation of -0.426. This indicates that while both shooting efficiency and turnover rate effect win percentage, shooting efficiency has a higher impact. 
 
 ```{r}
 reg_model_q7 <- lm(win_pct ~ efg_o + tor, data = cbb_q7)
 summary(reg_model_q7)
 ```
-- Interpretation: The regression model above shows that both shooting efficiency and turnover rate are high predictors of win percentage, which is determined by p < 0.001. Further, this model shows that the effective field goal percentage has a strong positive coefficient of 0.0309. This indicates that teams that have higher shooting efficiency tend to have higher win percentages. In regards to turnover rate, this model shows a negative coefficient of -0.0189. This means that teams who commit more turnovers tend to win fewer games, which is expected.
 
-- Interpretation: The regression model above shows that both shooting efficiency and turnover rate are high predictors of win percentage, which is determined by p \< 0.001. Further, this model shows that the effective field goal percentage has a strong positive coefficient of 0.0309. This indicates that teams that have higher shooting efficiency tend to have higher win percentages. In regards to turnover rate, this model shows a negative coefficient of -0.0189. This means that teams who commit more turnovers tend to win fewer games, which is expected.
+- Interpretation: The regression model above shows that both shooting efficiency and turnover rate are high predictors of win percentage, which is determined by p < 0.001. Further, this model shows that the effective field goal percentage has a strong positive coefficient of 0.0309. This indicates that teams that have higher shooting efficiency tend to have higher win percentages. In regards to turnover rate, this model shows a negative coefficient of -0.0189. This means that teams who commit more turnovers tend to win fewer games, which is expected.
 
 It is important to understand that in order to understand which factor has the higher impact, we will need to look at the magnitude of the coefficients. The regression model shows that the absolute value of effective field goal percentage is higher than the turnover rate. this suggests that shooting efficiency has a larger impact on the win percentage compared to turnover rate.
 
@@ -785,9 +783,8 @@ ggplot(long_piv_q7, aes(x = value, y = win_pct)) +
     y = "Win Percentage"
   )
 ```
-- Interpretation: The scatter plot above displays two panels and regression lines for the relationships between win percentage and both effective field goal percentage and turnover rate. The panel on the left shows the strong positive relationship between shooting efficiency and win percentage. The panel on the right shows the clear negative relationship between turnover rate and win percentage. 
 
-- Interpretation: The scatter plot above displays two panels and regression lines for the relationships between win percentage and both effective field goal percentage and turnover rate. The panel on the left shows the strong positive relationship between shooting efficiency and win percentage. The panel on the right shows the clear negative relationship between turnover rate and win percentage.
+- Interpretation: The scatter plot above displays two panels and regression lines for the relationships between win percentage and both effective field goal percentage and turnover rate. The panel on the left shows the strong positive relationship between shooting efficiency and win percentage. The panel on the right shows the clear negative relationship between turnover rate and win percentage. 
 
 It is important to note that the relationship in the right panel appears slightly weaker compared to the panel on the right. This indicates that both shooting efficiency and turnover rate have a strong relationship with winning percentage, but shooting efficiency has a larger impact or stronger relationship.
 
