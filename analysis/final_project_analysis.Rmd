@@ -707,7 +707,7 @@ Taken together, the visualizations show clear differences in offensive and defen
 
 ## Question 7: Which has a higher impact on winning, shooting efficiency or turnover rate?
 
-To determine whether shooting efficiency or turnover rate has a bigger impact on wins, we will need to compare and analyze the relationships between each of the variables and win percentages. This can be done by first cleaning the data. Then we can use regression and correlation techniques to compare the strengths and directions of each variables effects on the game. Visualizing this data with a scatter plot will allow us to see exactly how each of these core factors impact win percentage.
+To determine whether shooting efficiency or turnover rate has a bigger impact on wins, we will need to compare and analyze the relationships between each of the variables and win percentages. This can be done by first cleaning the data. Then we can use regression and correlation techniques to compare the magnitudes and directions of each variables effects on the game. Visualizing this data with a scatter plot will allow us to see exactly how each of these core factors impact win percentage.
 
 ```{r}
 cbb_q7 <- cbb_raw |>
@@ -784,6 +784,8 @@ It is important to note that the relationship in the right panel appears slightl
 
 ## Question 8: Which conferences have the highest average win percentage?
 
+To determine which conferences have the highest average win percentage we will first need to clean the data. Then we can group teams into their corresponding conferences and find the mean win percentage. We can use this information to find and visualize the top conferences with the highest average win percentages.
+
 ```{r}
 cbb_q8 <- cbb_raw |>
   clean_names() |>
@@ -813,7 +815,7 @@ kable(
   caption = "Average Win Percentage by Conference"
 )
 ```
-- Interpretation: The table above displays the average winning percentage for each conference. This is done by grouping the teams into their conferences and calculating their mean win percentages. This is important in comparing overall performance across the conferences so we can determine which conferences have the highest average win percentage.
+- Interpretation: The table above displays the average winning percentage for each conference from top having the highest and bottom having the lowest average win percentage. This is done by grouping the teams into their conferences and calculating their mean win percentages. This step is important in comparing overall performance across the conferences so we can visualize which conferences have the highest average win percentage.
 
 ```{r}
 ggplot(conf_win_summary |>
@@ -827,9 +829,9 @@ ggplot(conf_win_summary |>
     y = "Average Win Percentage"
   )
 ```
-- Interpretation: The above bar chart displays the top 10 conferences based on highest average win percentages. The conferences with the highest average win percentages are at the top of the chart.  
+- Interpretation: The above bar chart displays the top 10 conferences based on highest average win percentages. The conferences with the highest average win percentages are at the top of the chart. The graph shows that while many power conferences tend to have higher win percentages, like Big12, Big10, and SEC, smaller conferences also achieve high win percentages as well, like Ind, P12, and MWC. This indicates that while conference affiliation can be an important factor in winning percentages, it should be interpreted with other factors as well to provide a more accurate performance understanding.  
 
-- Conclusion: Overall, this analysis shows that there are definitely differences in average win percentages across conferences. 
+- Conclusion: Overall, this analysis shows that there are definitely differences in average win percentages across conferences. The top five Conferences with the highest win percentages include B12, B10, Ind, BE, and SEC, respectively. The analysis shows both power conferences and small conferences can achieve high win percentages. This is why it may be more accurate to analyze performance by including other factors, such as competition schedule and efficiency metrics.
 
 ## Conclusion:
 
