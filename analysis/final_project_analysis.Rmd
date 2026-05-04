@@ -711,7 +711,7 @@ Taken together, the visualizations show clear differences in offensive and defen
 
 ## Question 7: Which has a higher impact on winning, shooting efficiency or turnover rate?
 
-To determine whether shooting efficiency or turnover rate has a bigger impact on wins, we will need to compare and analyze the relationships between each of the variables and win percentages. This can be done by first cleaning the data. Then we can use regression and correlation techniques to compare the strengths and directions of each variables effects on the game. Visualizing this data with a scatter plot will allow us to see exactly how each of these core factors impact win percentage.
+To determine whether shooting efficiency or turnover rate has a bigger impact on wins, we will need to compare and analyze the relationships between each of the variables and win percentages. This can be done by first cleaning the data. Then we can use regression and correlation techniques to compare the magnitudes and directions of each variables effects on the game. Visualizing this data with a scatter plot will allow us to see exactly how each of these core factors impact win percentage.
 
 ```{r}
 cbb_q7 <- cbb_raw |>
@@ -749,14 +749,14 @@ kable(
 )
 ```
 
-- Interpretation: The correlation table above displays the correlation between win percentage and both variables shooting efficiency and turnover rate. The effective field goal percentage has a strong positive correlation of 0.613, while turnover rate has a moderate negative correlation of -0.426. This indicates that while both shooting efficiency and turnover rate effect win percentage, shooting efficiency has a higher impact.
+- Interpretation: The correlation table above displays the correlation between win percentage and both variables shooting efficiency and turnover rate. The effective field goal percentage has a strong positive correlation of 0.613, while turnover rate has a moderate negative correlation of -0.426. This indicates that while both shooting efficiency and turnover rate effect win percentage, shooting efficiency has a higher impact. 
 
 ```{r}
 reg_model_q7 <- lm(win_pct ~ efg_o + tor, data = cbb_q7)
 summary(reg_model_q7)
 ```
 
-- Interpretation: The regression model above shows that both shooting efficiency and turnover rate are high predictors of win percentage, which is determined by p \< 0.001. Further, this model shows that the effective field goal percentage has a strong positive coefficient of 0.0309. This indicates that teams that have higher shooting efficiency tend to have higher win percentages. In regards to turnover rate, this model shows a negative coefficient of -0.0189. This means that teams who commit more turnovers tend to win fewer games, which is expected.
+- Interpretation: The regression model above shows that both shooting efficiency and turnover rate are high predictors of win percentage, which is determined by p < 0.001. Further, this model shows that the effective field goal percentage has a strong positive coefficient of 0.0309. This indicates that teams that have higher shooting efficiency tend to have higher win percentages. In regards to turnover rate, this model shows a negative coefficient of -0.0189. This means that teams who commit more turnovers tend to win fewer games, which is expected.
 
 It is important to understand that in order to understand which factor has the higher impact, we will need to look at the magnitude of the coefficients. The regression model shows that the absolute value of effective field goal percentage is higher than the turnover rate. this suggests that shooting efficiency has a larger impact on the win percentage compared to turnover rate.
 
@@ -784,13 +784,15 @@ ggplot(long_piv_q7, aes(x = value, y = win_pct)) +
   )
 ```
 
-- Interpretation: The scatter plot above displays two panels and regression lines for the relationships between win percentage and both effective field goal percentage and turnover rate. The panel on the left shows the strong positive relationship between shooting efficiency and win percentage. The panel on the right shows the clear negative relationship between turnover rate and win percentage.
+- Interpretation: The scatter plot above displays two panels and regression lines for the relationships between win percentage and both effective field goal percentage and turnover rate. The panel on the left shows the strong positive relationship between shooting efficiency and win percentage. The panel on the right shows the clear negative relationship between turnover rate and win percentage. 
 
 It is important to note that the relationship in the right panel appears slightly weaker compared to the panel on the right. This indicates that both shooting efficiency and turnover rate have a strong relationship with winning percentage, but shooting efficiency has a larger impact or stronger relationship.
 
 - Conclusion: Overall, this analysis shows that while both shooting efficiency and turnover rate effect win percentage, shooting efficiency tends to have a higher impact. Both the correlation table and regression model support this conclusion. In both cases, the effective field goal percentage has a stronger relationship with win percentage than turnover rate. However, both turnover rate and shooting efficiency have strong to moderate relationships and correlations, meaning they both have a meaningful impact.
 
 ## Question 8: Which conferences have the highest average win percentage?
+
+To determine which conferences have the highest average win percentage we will first need to clean the data. Then we can group teams into their corresponding conferences and find the mean win percentage. We can use this information to find and visualize the top conferences with the highest average win percentages.
 
 ```{r}
 cbb_q8 <- cbb_raw |>
@@ -822,7 +824,7 @@ kable(
 )
 ```
 
-- Interpretation: The table above displays the average winning percentage for each conference. This is done by grouping the teams into their conferences and calculating their mean win percentages. This is important in comparing overall performance across the conferences so we can determine which conferences have the highest average win percentage.
+- Interpretation: The table above displays the average winning percentage for each conference from top having the highest and bottom having the lowest average win percentage. This is done by grouping the teams into their conferences and calculating their mean win percentages. This step is important in comparing overall performance across the conferences so we can visualize which conferences have the highest average win percentage.
 
 ```{r}
 ggplot(conf_win_summary |>
@@ -837,9 +839,9 @@ ggplot(conf_win_summary |>
   )
 ```
 
-- Interpretation: The above bar chart displays the top 10 conferences based on highest average win percentages. The conferences with the highest average win percentages are at the top of the chart.
+- Interpretation: The above bar chart displays the top 10 conferences based on highest average win percentages. The conferences with the highest average win percentages are at the top of the chart. The graph shows that while many power conferences tend to have higher win percentages, like Big12, Big10, and SEC, smaller conferences also achieve high win percentages as well, like Ind, P12, and MWC. This indicates that while conference affiliation can be an important factor in winning percentages, it should be interpreted with other factors as well to provide a more accurate performance understanding.  
 
-- Conclusion: Overall, this analysis shows that there are definitely differences in average win percentages across conferences.
+- Conclusion: Overall, this analysis shows that there are definitely differences in average win percentages across conferences. The top five Conferences with the highest win percentages include B12, B10, Ind, BE, and SEC, respectively. The analysis shows both power conferences and small conferences can achieve high win percentages. This is why it may be more accurate to analyze performance by including other factors, such as competition schedule and efficiency metrics.
 
 ## Conclusion:
 
