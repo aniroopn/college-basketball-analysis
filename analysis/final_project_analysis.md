@@ -32,6 +32,11 @@ In pursuit of this goal, we will explore the following questions:
 6.  Do some conferences show consistently different statistical profiles
     than others?
 
+7.  Which has a higher impact on winning, shooting efficiency or
+    turnover rate?
+
+8.  Which conferences have the highest average win percentage?
+
 These are the main questions we aim to answer through the completion of
 this project. With our findings, we hope to better understand the key
 characteristics that contribute to success in college basketball and
@@ -1624,6 +1629,259 @@ success are driven by efficiency rather than pace of play.
   play does not significantly distinguish team success. These findings
   suggest that conference affiliation is strongly associated with team
   quality and performance characteristics in college basketball.
+
+## Question 7: Which has a higher impact on winning, shooting efficiency or turnover rate?
+
+To determine whether shooting efficiency or turnover rate has a bigger
+impact on wins, we will need to compare and analyze the relationships
+between each of the variables and win percentages. This can be done by
+first cleaning the data. Then we can use regression and correlation
+techniques to compare the strengths and directions of each variables
+effects on the game. Visualizing this data with a scatter plot will
+allow us to see exactly how each of these core factors impact win
+percentage.
+
+``` r
+cbb_q7 <- cbb_raw |>
+  clean_names() |>
+  mutate( 
+    win_pct = w / g
+  ) |>
+  select(win_pct, efg_o, tor) |>
+  drop_na()
+```
+
+``` r
+corr_table_q7 <- cbb_q7 |>
+  summarise(
+    corr_efg = cor(efg_o, win_pct),
+    corr_tor = cor(tor, win_pct)
+  ) |>
+  pivot_longer(
+    cols = everything(),
+    names_to = "Statistic",
+    values_to = "Correlation"
+  ) |>
+  mutate(
+    Statistic = recode(
+      Statistic,
+      corr_efg = "Effective FG % (Shooting Efficiency)",
+      corr_tor = "Turnover Rate"
+    )
+  )
+
+kable(
+  corr_table_q7,
+  digits = 3,
+  caption = "The Correlation of Shooting Efficiency and Turnover Rate with Win Percentage"
+)
+```
+
+| Statistic                            | Correlation |
+|:-------------------------------------|------------:|
+| Effective FG % (Shooting Efficiency) |       0.613 |
+| Turnover Rate                        |      -0.426 |
+
+The Correlation of Shooting Efficiency and Turnover Rate with Win
+Percentage
+
+- Interpretation: The correlation table above displays the correlation
+  between win percentage and both variables shooting efficiency and
+  turnover rate. The effective field goal percentage has a strong
+  positive correlation of 0.613, while turnover rate has a moderate
+  negative correlation of -0.426. This indicates that while both
+  shooting efficiency and turnover rate effect win percentage, shooting
+  efficiency has a higher impact.
+
+``` r
+reg_model_q7 <- lm(win_pct ~ efg_o + tor, data = cbb_q7)
+summary(reg_model_q7)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = win_pct ~ efg_o + tor, data = cbb_q7)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.49132 -0.09584  0.00123  0.09567  0.41365 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) -0.675828   0.047781  -14.14   <2e-16 ***
+    ## efg_o        0.030871   0.000738   41.83   <2e-16 ***
+    ## tor         -0.018926   0.001052  -17.99   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.1372 on 4246 degrees of freedom
+    ## Multiple R-squared:  0.4204, Adjusted R-squared:  0.4201 
+    ## F-statistic:  1540 on 2 and 4246 DF,  p-value: < 2.2e-16
+
+- Interpretation: The regression model above shows that both shooting
+  efficiency and turnover rate are high predictors of win percentage,
+  which is determined by p \< 0.001. Further, this model shows that the
+  effective field goal percentage has a strong positive coefficient of
+  0.0309. This indicates that teams that have higher shooting efficiency
+  tend to have higher win percentages. In regards to turnover rate, this
+  model shows a negative coefficient of -0.0189. This means that teams
+  who commit more turnovers tend to win fewer games, which is expected.
+
+It is important to understand that in order to understand which factor
+has the higher impact, we will need to look at the magnitude of the
+coefficients. The regression model shows that the absolute value of
+effective field goal percentage is higher than the turnover rate. this
+suggests that shooting efficiency has a larger impact on the win
+percentage compared to turnover rate.
+
+``` r
+long_piv_q7 <- cbb_q7 |>
+  pivot_longer(
+    cols = c(efg_o, tor),
+    names_to = "stat",
+    values_to = "value"
+  ) |>
+  mutate(
+    stat = recode(stat,
+                  efg_o = "Effective FG %",
+                  tor = "Turnover Rate")
+  )
+
+ggplot(long_piv_q7, aes(x = value, y = win_pct)) +
+  geom_point(aplha = .3) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~ stat, scales = "free_x") +
+  labs(
+    title = "Shooting Efficiency vs Turnover Rate: Impact on Winning Percentage",
+    x = "Value",
+    y = "Win Percentage"
+  )
+```
+
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+- Interpretation: The scatter plot above displays two panels and
+  regression lines for the relationships between win percentage and both
+  effective field goal percentage and turnover rate. The panel on the
+  left shows the strong positive relationship between shooting
+  efficiency and win percentage. The panel on the right shows the clear
+  negative relationship between turnover rate and win percentage.
+
+It is important to note that the relationship in the right panel appears
+slightly weaker compared to the panel on the right. This indicates that
+both shooting efficiency and turnover rate have a strong relationship
+with winning percentage, but shooting efficiency has a larger impact or
+stronger relationship.
+
+- Conclusion: Overall, this analysis shows that while both shooting
+  efficiency and turnover rate effect win percentage, shooting
+  efficiency tends to have a higher impact. Both the correlation table
+  and regression model support this conclusion. In both cases, the
+  effective field goal percentage has a stronger relationship with win
+  percentage than turnover rate. However, both turnover rate and
+  shooting efficiency have strong to moderate relationships and
+  correlations, meaning they both have a meaningful impact.
+
+## Question 8: Which conferences have the highest average win percentage?
+
+``` r
+cbb_q8 <- cbb_raw |>
+  clean_names() |>
+  mutate(
+    win_pct = w / g
+  ) |>
+  filter(
+    !is.na(win_pct),
+    win_pct >= 0,
+    win_pct <= 1
+  )
+```
+
+``` r
+conf_win_summary <- cbb_q8 |>
+  group_by(conf) |>
+  summarise(
+    win_pct_avg = mean(win_pct, na.rm = TRUE),
+    teams = n(),
+    .groups = "drop"
+  ) |>
+  arrange(desc(win_pct_avg))
+
+kable(
+  conf_win_summary,
+  digits = 3,
+  caption = "Average Win Percentage by Conference"
+)
+```
+
+| conf | win_pct_avg | teams |
+|:-----|------------:|------:|
+| B12  |       0.607 |   130 |
+| B10  |       0.591 |   168 |
+| Ind  |       0.586 |     1 |
+| BE   |       0.584 |   130 |
+| SEC  |       0.582 |   170 |
+| ACC  |       0.582 |   180 |
+| P12  |       0.566 |   132 |
+| MWC  |       0.556 |   130 |
+| Amer |       0.556 |   127 |
+| WCC  |       0.548 |   119 |
+| A10  |       0.542 |   172 |
+| MVC  |       0.541 |   126 |
+| CUSA |       0.538 |   156 |
+| SB   |       0.531 |   145 |
+| MAC  |       0.527 |   144 |
+| WAC  |       0.524 |   115 |
+| SC   |       0.515 |   123 |
+| Ivy  |       0.512 |    88 |
+| CAA  |       0.505 |   131 |
+| Sum  |       0.505 |   107 |
+| BW   |       0.502 |   119 |
+| OVC  |       0.494 |   138 |
+| ASun |       0.493 |   119 |
+| Horz |       0.492 |   124 |
+| BSth |       0.491 |   129 |
+| BSky |       0.483 |   133 |
+| AE   |       0.479 |   110 |
+| MAAC |       0.477 |   133 |
+| Slnd |       0.476 |   141 |
+| Pat  |       0.472 |   118 |
+| NEC  |       0.447 |   119 |
+| MEAC |       0.409 |   131 |
+| SWAC |       0.389 |   128 |
+| GWC  |       0.383 |     5 |
+| ind  |       0.330 |     6 |
+
+Average Win Percentage by Conference
+
+- Interpretation: The table above displays the average winning
+  percentage for each conference. This is done by grouping the teams
+  into their conferences and calculating their mean win percentages.
+  This is important in comparing overall performance across the
+  conferences so we can determine which conferences have the highest
+  average win percentage.
+
+``` r
+ggplot(conf_win_summary |>
+         slice_head(n = 10),
+       aes(x = reorder(conf, win_pct_avg), y = win_pct_avg)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Top 10 Conferences by Average Win Percentage",
+    x = "Conference",
+    y = "Average Win Percentage"
+  )
+```
+
+![](final_project_analysis_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+- Interpretation: The above bar chart displays the top 10 conferences
+  based on highest average win percentages. The conferences with the
+  highest average win percentages are at the top of the chart.
+
+- Conclusion: Overall, this analysis shows that there are definitely
+  differences in average win percentages across conferences.
 
 ## Conclusion:
 
